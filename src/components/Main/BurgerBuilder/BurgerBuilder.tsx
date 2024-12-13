@@ -52,11 +52,11 @@ const IngredientsTab = () => {
 
 const fetchFoodItems = async (): Promise<IngredientsApiResponse | string> => {
     try {
-        const resp = await axios.get<IngredientsApiResponse>(`${process.env.HOST}/api/ingredients`)
+        const resp = await axios.get<IngredientsApiResponse>(`${process.env.REACT_APP_FOOD_API_HOST}/api/ingredients`)
         if (!resp.data.success) {
             return apiErrorMsg;
         }
-        console.log(resp.data);
+
         return resp.data
     } catch (error) {
         return apiErrorMsg
