@@ -3,7 +3,6 @@
     justify-content: center;
     align-items: center;
     border-radius: 40px;
-    padding: 16px 20px;
     gap: 8px;
     background: inherit;
     border: none;
@@ -26,11 +25,9 @@
 }
 
 .header {
-    border: 2px #4C4CFF solid;
-    width: auto;
     height: auto;
-    padding: 16px;
     display: flex;
+    width: 82%;
     justify-content: space-between;
     align-items: center;
     position: relative;
@@ -40,4 +37,13 @@
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+}
+
+header {
+    background-color: #1C1C21;
+    width: 100%;
+    border: 2px #4C4CFF solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

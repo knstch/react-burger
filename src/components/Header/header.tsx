@@ -18,27 +18,29 @@ const Header = () => {
     ]
 
     return (
-        <div className={styles.header}>
-            <div className={styles.btnGroup}>
-                {orderBtns.map((item, i) => (
-                    <MenuItem key={i} icon={item.icon} link={item.link} text={item.text}/>
-                ))}
+        <header>
+            <div className={`${styles.header} p-4`}>
+                <div className={styles.btnGroup}>
+                    {orderBtns.map((item, i) => (
+                        <MenuItem key={i} icon={item.icon} link={item.link} text={item.text}/>
+                    ))}
+                </div>
+                <Logo className={styles.logo}/>
+                <MenuItem icon={ProfileIcon} text={"Личный кабинет"} link={""}/>
             </div>
-            <Logo className={styles.logo} />
-            <MenuItem icon={ProfileIcon} text={"Личный кабинет"} link={""}/>
-        </div>
+        </header>
     )
 }
 
 interface MenuItemProps {
-    icon:  FC<TIconProps>;
+    icon: FC<TIconProps>;
     text: string;
     link: string;
 }
 
 const MenuItem: React.FC<MenuItemProps> = (props) => {
     return (
-        <button className={`${styles.headerBtn} text text_type_main-default`}>
+        <button className={`${styles.headerBtn} text text_type_main-default p-4`}>
             <props.icon type={"primary"}></props.icon>
             <span>{props.text}</span>
         </button>
