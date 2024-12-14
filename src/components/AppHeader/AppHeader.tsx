@@ -1,9 +1,9 @@
 import {BurgerIcon, ListIcon, Logo, ProfileIcon} from "@ya.praktikum/react-developer-burger-ui-components";
-import styles from './header.module.css';
+import styles from './AppHeader.module.css';
 import React, {FC} from "react";
 import {TIconProps} from "@ya.praktikum/react-developer-burger-ui-components/dist/ui/icons/utils";
 
-const Header = () => {
+const AppHeader = () => {
     const orderButtons: MenuItemProps[] = [
         {
             icon: BurgerIcon,
@@ -48,4 +48,4 @@ const MenuItem: React.FC<MenuItemProps> = (props) => {
 }
 
 
-export default Header;
+export default AppHeader;

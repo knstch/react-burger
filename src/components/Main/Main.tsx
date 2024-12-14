@@ -1,11 +1,11 @@
-import BurgerBuilder from "./BurgerBuilder/BurgerBuilder";
-import Cart from "./Cart/Cart";
+import BurgerConstructor from "./BurgerConstructor/BurgerConstructor";
+import OrderDetails from "./OrderDetails/OrderDetails";
 
 const Main = () => {
     return (
         <main>
-            <BurgerBuilder/>
-            <Cart/>
+            <BurgerConstructor/>
+            <OrderDetails/>
         </main>
     )
 }

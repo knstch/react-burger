@@ -5,9 +5,9 @@ import {
     DragIcon
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import React from "react";
-import styles from './cart.module.css';
+import styles from './OrderDetails.module.css';
 
-const Cart = () => {
+const OrderDetails = () => {
     const mockData: CartItemProps[] = [
         {
             image: "https://code.s3.yandex.net/react/code/salad.png",
@@ -90,7 +90,7 @@ const CartItemsContainer: React.FC<CartItemsContainerProps> = (props) => {
         <div className={styles.cartItemsContainer}>
             {
                 bun && (
-                    <ConstructorElement text={bun.name} price={bun.cost} thumbnail={bun.image} type={"top"} isLocked={true} extraClass={`mb-4 ml-5 ${styles.constructorElement}`}/>
+                    <ConstructorElement text={bun.name} price={bun.cost} thumbnail={bun.image} type={"top"} isLocked={true} extraClass={`ml-8 mr-4 ${styles.constructorElement}`}/>
                 )
             }
             <li className={styles.cartIngredientsContainer}>
@@ -102,7 +102,7 @@ const CartItemsContainer: React.FC<CartItemsContainerProps> = (props) => {
             </li>
             {
                 bun && (
-                    <ConstructorElement text={bun.name} price={bun.cost} thumbnail={bun.image} type={"bottom"} isLocked={true} extraClass={`mt-4 ml-5 ${styles.constructorElement}`}/>
+                    <ConstructorElement text={bun.name} price={bun.cost} thumbnail={bun.image} type={"bottom"} isLocked={true} extraClass={`ml-8 mr-4 ${styles.constructorElement}`}/>
                 )
             }
         </div>
@@ -147,4 +147,4 @@ interface CartItemProps {
     type: string,
 }
 
-export default Cart
+export default OrderDetails;

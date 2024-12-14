@@ -1,12 +1,14 @@
 import React, {useState, useEffect} from "react";
 import {Tab, CurrencyIcon, Counter} from "@ya.praktikum/react-developer-burger-ui-components";
 import axios from "axios";
-import styles from './burgerBuilder.module.css';
+import styles from './BurgerConstructor.module.css';
 
 const ingredientsTitleToEnum = new Map<string, string>()
 ingredientsTitleToEnum.set("Булки", "bun")
 ingredientsTitleToEnum.set("Начинки", "main")
 ingredientsTitleToEnum.set("Соусы", "sauce")
+
+const burgerApiHost = `${process.env.REACT_APP_FOOD_API_HOST}/api/ingredients`
 
 interface IngredientsApiResponse {
     success: boolean;
@@ -30,7 +32,7 @@ interface FoodItem {
 
 const apiErrorMsg = 'Упс! Космические тараканы сожрали интернет и я не могу получить ингредиенты'
 
-const BurgerBuilder = () => {
+const BurgerConstructor = () => {
     const [error, setError] = useState("");
     const [ingredients, setIngredients] = useState<FoodItem[]>([])
     const ingredientTypes: string[] = ["Булки", "Соусы", "Начинки"]
@@ -69,7 +71,7 @@ const BurgerBuilder = () => {
                 <h1 className={`text text_type_main-large ${styles.modalTitle}`}>Собери бургер</h1>
             </div>
             <IngredientsTab/>
-            <li className={`${styles.noNumbering} ${styles.ingredientsSectionContainer}`}>
+            <li className={`${styles.noNumbering} ${styles.ingredientsSectionContainer} mt-10`}>
                 {
                     ingredientTypes.map((_, i) => (
                         <IngredientsSection key={i} ingredients={ingredients} title={ingredientTypes[i]} />
@@ -110,7 +112,7 @@ const IngredientsTab = () => {
 
 const fetchFoodItems = async (): Promise<IngredientsApiResponse | string> => {
     try {
-        const resp = await axios.get<IngredientsApiResponse>(`${process.env.REACT_APP_FOOD_API_HOST}/api/ingredients`)
+        const resp = await axios.get<IngredientsApiResponse>(burgerApiHost)
         if (!resp.data.success) {
             return apiErrorMsg;
         }
@@ -154,7 +156,7 @@ const IngredientsSection: React.FC<ingredientSectionData> = (props) => {
             <div className={``}>
                 <h2 className={`text text_type_main-medium`}>{props.title}</h2>
             </div>
-            <li className={`${styles.noNumbering} ${styles.ingredientsContainer}`}>
+            <li className={`${styles.noNumbering} ${styles.ingredientsContainer} pt-6 pl-4 mb-10`}>
                 {
                     filteredIngredients.map((ingredient: FoodItem, i) => (
                         <IngredientCard key={i} imgLink={ingredient.image} cost={ingredient.price} title={ingredient.name}/>
@@ -165,4 +167,4 @@ const IngredientsSection: React.FC<ingredientSectionData> = (props) => {
     )
 }
 
-export default BurgerBuilder
+export default BurgerConstructor;

@@ -1,12 +1,12 @@
 import React from 'react';
 import './App.css';
-import Header from './components/Header/header'
-import Main from "./components/Main/Main";
+import AppHeader from '../AppHeader/AppHeader'
+import Main from "../Main/Main";
 
 const App = () => {
   return (
       <div className="App">
-        <Header/>
+        <AppHeader/>
         <Main/>
       </div>
   );
