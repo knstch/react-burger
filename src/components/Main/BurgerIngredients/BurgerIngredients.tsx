@@ -38,6 +38,7 @@ const BurgerIngredients = () => {
     const [error, setError] = useState("");
     const [ingredients, setIngredients] = useState<FoodItem[]>([])
     const ingredientTypes: string[] = ["Булки", "Соусы", "Начинки"]
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -53,6 +54,8 @@ const BurgerIngredients = () => {
                 }
             } catch (error: any) {
                 setError(error.message)
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -67,6 +70,10 @@ const BurgerIngredients = () => {
         )
     }
 
+    if (loading) {
+        return <div className="mt-10">Loading...</div>;
+    }
+
     return (
         <section className={`mt-10 ${styles.burgerModal} p-4`}>
             <div className={styles.modalTitleWrapper}>
@@ -75,8 +82,8 @@ const BurgerIngredients = () => {
             <IngredientsTab/>
             <li className={`${styles.noNumbering} ${styles.ingredientsSectionContainer} mt-10`}>
                 {
-                    ingredientTypes.map((_, i) => (
-                        <IngredientsSection key={i} ingredients={ingredients} title={ingredientTypes[i]} />
+                    ingredientTypes.map((item, idx) => (
+                        <IngredientsSection key={idx} ingredients={ingredients} title={item} />
                     ))
                 }
             </li>
@@ -181,7 +188,7 @@ IngredientCard.propTypes = PropTypes.shape({
     image: PropTypes.string.isRequired,
     image_mobile: PropTypes.string.isRequired,
     image_large: PropTypes.string.isRequired,
-    __v: PropTypes.number.isRequired,
+    __v: PropTypes.number,
 });
 
 IngredientsSection.propTypes = PropTypes.shape({
