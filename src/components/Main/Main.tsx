@@ -1,11 +1,11 @@
-import BurgerConstructor from "./BurgerConstructor/BurgerConstructor";
-import OrderDetails from "./OrderDetails/OrderDetails";
+import BurgerIngredients from "./BurgerIngredients/BurgerIngredients";
+import BurgerContractor from "./BurgerContractor/BurgerContractor";
 
 const Main = () => {
     return (
         <main>
-            <BurgerConstructor/>
-            <OrderDetails/>
+            <BurgerIngredients/>
+            <BurgerContractor/>
         </main>
     )
 }

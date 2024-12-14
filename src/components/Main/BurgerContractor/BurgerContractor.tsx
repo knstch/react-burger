@@ -5,9 +5,10 @@ import {
     DragIcon
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import React from "react";
-import styles from './OrderDetails.module.css';
+import styles from './BurgerContractor.module.css';
+import PropTypes from "prop-types";
 
-const OrderDetails = () => {
+const BurgerContractor = () => {
     const mockData: CartItemProps[] = [
         {
             image: "https://code.s3.yandex.net/react/code/salad.png",
@@ -77,17 +78,17 @@ const OrderDetails = () => {
 
     return (
         <div className={`mt-25 ${styles.cartContainer}`}>
-            <CartItemsContainer items={mockData} />
+            <ConstructorContainer items={mockData} />
             <CheckOutBox totalAmount={totalCost}/>
         </div>
     )
 }
 
-const CartItemsContainer: React.FC<CartItemsContainerProps> = (props) => {
+const ConstructorContainer: React.FC<CartItemsContainerProps> = (props) => {
     const bun: CartItemProps | undefined = props.items.find(ingredient => ingredient.type === "bun")
     const ingredientsWithNoBun: CartItemProps[] = props.items.filter(ingredient => ingredient.type !== "bun");
     return (
-        <div className={styles.cartItemsContainer}>
+        <section className={styles.cartItemsContainer}>
             {
                 bun && (
                     <ConstructorElement text={bun.name} price={bun.cost} thumbnail={bun.image} type={"top"} isLocked={true} extraClass={`ml-8 mr-4 ${styles.constructorElement}`}/>
@@ -105,7 +106,7 @@ const CartItemsContainer: React.FC<CartItemsContainerProps> = (props) => {
                     <ConstructorElement text={bun.name} price={bun.cost} thumbnail={bun.image} type={"bottom"} isLocked={true} extraClass={`ml-8 mr-4 ${styles.constructorElement}`}/>
                 )
             }
-        </div>
+        </section>
     )
 }
 
@@ -147,4 +148,15 @@ interface CartItemProps {
     type: string,
 }
 
-export default OrderDetails;
+CartItem.propTypes = PropTypes.shape({
+    image: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    cost: PropTypes.number.isRequired,
+    type: PropTypes.string.isRequired
+});
+
+ConstructorContainer.propTypes = PropTypes.shape({
+    items: PropTypes.arrayOf(CartItem.propTypes).isRequired
+});
+
+export default BurgerContractor;

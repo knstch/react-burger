@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from "react";
 import {Tab, CurrencyIcon, Counter} from "@ya.praktikum/react-developer-burger-ui-components";
 import axios from "axios";
-import styles from './BurgerConstructor.module.css';
+import styles from './BurgerIngredients.module.css';
+// @ts-ignore
+import PropTypes from 'prop-types';
 
 const ingredientsTitleToEnum = new Map<string, string>()
 ingredientsTitleToEnum.set("Булки", "bun")
@@ -32,7 +34,7 @@ interface FoodItem {
 
 const apiErrorMsg = 'Упс! Космические тараканы сожрали интернет и я не могу получить ингредиенты'
 
-const BurgerConstructor = () => {
+const BurgerIngredients = () => {
     const [error, setError] = useState("");
     const [ingredients, setIngredients] = useState<FoodItem[]>([])
     const ingredientTypes: string[] = ["Булки", "Соусы", "Начинки"]
@@ -66,7 +68,7 @@ const BurgerConstructor = () => {
     }
 
     return (
-        <div className={`mt-10 ${styles.burgerModal} p-4`}>
+        <section className={`mt-10 ${styles.burgerModal} p-4`}>
             <div className={styles.modalTitleWrapper}>
                 <h1 className={`text text_type_main-large ${styles.modalTitle}`}>Собери бургер</h1>
             </div>
@@ -78,7 +80,7 @@ const BurgerConstructor = () => {
                     ))
                 }
             </li>
-        </div>
+        </section>
     )
 }
 
@@ -167,4 +169,24 @@ const IngredientsSection: React.FC<ingredientSectionData> = (props) => {
     )
 }
 
-export default BurgerConstructor;
+IngredientCard.propTypes = PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    proteins: PropTypes.number.isRequired,
+    fat: PropTypes.number.isRequired,
+    carbohydrates: PropTypes.number.isRequired,
+    calories: PropTypes.number.isRequired,
+    price: PropTypes.number.isRequired,
+    image: PropTypes.string.isRequired,
+    image_mobile: PropTypes.string.isRequired,
+    image_large: PropTypes.string.isRequired,
+    __v: PropTypes.number.isRequired,
+});
+
+IngredientsSection.propTypes = PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    ingredients: PropTypes.arrayOf(IngredientCard.propTypes).isRequired,
+});
+
+export default BurgerIngredients;
