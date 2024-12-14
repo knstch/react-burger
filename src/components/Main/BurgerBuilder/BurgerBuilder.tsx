@@ -3,6 +3,11 @@ import {Tab, CurrencyIcon, Counter} from "@ya.praktikum/react-developer-burger-u
 import axios from "axios";
 import styles from './burgerBuilder.module.css';
 
+const ingredientsTitleToEnum = new Map<string, string>()
+ingredientsTitleToEnum.set("Булки", "bun")
+ingredientsTitleToEnum.set("Начинки", "main")
+ingredientsTitleToEnum.set("Соусы", "sauce")
+
 interface IngredientsApiResponse {
     success: boolean;
     data: FoodItem[];
@@ -28,6 +33,7 @@ const apiErrorMsg = 'Упс! Космические тараканы сожра�
 const BurgerBuilder = () => {
     const [error, setError] = useState("");
     const [ingredients, setIngredients] = useState<FoodItem[]>([])
+    const ingredientTypes: string[] = ["Булки", "Соусы", "Начинки"]
 
     useEffect(() => {
         const fetchData = async () => {
@@ -63,14 +69,13 @@ const BurgerBuilder = () => {
                 <h1 className={`text text_type_main-large ${styles.modalTitle}`}>Собери бургер</h1>
             </div>
             <IngredientsTab/>
-            <div className={styles.ingredientsList}>
-                    {
-                        ingredients.map((ingredient: FoodItem) => (
-                            <IngredientCard imgLink={ingredient.image} cost={ingredient.price} title={ingredient.name}/>
-                        ))
-                    }
-                </div>
-
+            <li className={`${styles.noNumbering} ${styles.ingredientsSectionContainer}`}>
+                {
+                    ingredientTypes.map((_, i) => (
+                        <IngredientsSection key={i} ingredients={ingredients} title={ingredientTypes[i]} />
+                    ))
+                }
+            </li>
         </div>
     )
 }
@@ -121,11 +126,9 @@ interface cardData {
     title: string,
 }
 
-// const IngredientsSection
-
 const IngredientCard: React.FC<cardData> = (props) => {
     return (
-        <div className={`${styles.burgerCard} m-6`}>
+        <ol className={`${styles.burgerCard} m-6`}>
             <div className={styles.counter}>
                 <Counter count={1}/>
             </div>
@@ -134,8 +137,31 @@ const IngredientCard: React.FC<cardData> = (props) => {
                 <span className={`text text_type_main-default mr-1`}>{props.cost}</span>
                 <CurrencyIcon type="primary" />
             </div>
-            <span className={`text text_type_main-default`}>{props.title}</span>
-        </div>
+            <span className={`text text_type_main-default ${styles.burgerCardTitle}`}>{props.title}</span>
+        </ol>
+    )
+}
+
+interface ingredientSectionData {
+    title: string
+    ingredients: FoodItem[]
+}
+
+const IngredientsSection: React.FC<ingredientSectionData> = (props) => {
+    const filteredIngredients = props.ingredients.filter(ingredient => ingredient.type === ingredientsTitleToEnum.get(props.title))
+    return (
+        <ol className={`${styles.ingredientsSection}`}>
+            <div>
+                <h2 className={`text text_type_main-medium`}>{props.title}</h2>
+            </div>
+            <li className={`${styles.noNumbering} ${styles.ingredientsContainer}`}>
+                {
+                    filteredIngredients.map((ingredient: FoodItem, i) => (
+                        <IngredientCard key={i} imgLink={ingredient.image} cost={ingredient.price} title={ingredient.name}/>
+                    ))
+                }
+            </li>
+        </ol>
     )
 }
 
