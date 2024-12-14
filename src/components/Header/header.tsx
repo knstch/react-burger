@@ -4,7 +4,7 @@ import React, {FC} from "react";
 import {TIconProps} from "@ya.praktikum/react-developer-burger-ui-components/dist/ui/icons/utils";
 
 const Header = () => {
-    const orderBtns: MenuItemProps[] = [
+    const orderButtons: MenuItemProps[] = [
         {
             icon: BurgerIcon,
             text: "Конструктор",
@@ -21,7 +21,7 @@ const Header = () => {
         <header>
             <div className={`${styles.header} p-4`}>
                 <div className={styles.btnGroup}>
-                    {orderBtns.map((item, i) => (
+                    {orderButtons.map((item, i) => (
                         <MenuItem key={i} icon={item.icon} link={item.link} text={item.text}/>
                     ))}
                 </div>

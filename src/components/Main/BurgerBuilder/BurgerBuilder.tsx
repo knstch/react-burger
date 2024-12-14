@@ -1,6 +1,7 @@
-import React from "react";
-import {Tab} from "@ya.praktikum/react-developer-burger-ui-components";
+import React, {useState, useEffect} from "react";
+import {Tab, CurrencyIcon, Counter} from "@ya.praktikum/react-developer-burger-ui-components";
 import axios from "axios";
+import styles from './burgerBuilder.module.css';
 
 interface IngredientsApiResponse {
     success: boolean;
@@ -25,26 +26,78 @@ interface FoodItem {
 const apiErrorMsg = 'Упс! Космические тараканы сожрали интернет и я не могу получить ингредиенты'
 
 const BurgerBuilder = () => {
-    fetchFoodItems()
+    const [error, setError] = useState("");
+    const [ingredients, setIngredients] = useState<FoodItem[]>([])
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await fetchFoodItems()
+
+                if (typeof res === "string") {
+                    setError(res)
+                } else if (res.success) {
+                    setIngredients(res.data)
+                } else {
+                    setError("Failed to fetch ingredients.")
+                }
+            } catch (error: any) {
+                setError(error.message)
+            }
+        };
+
+        fetchData()
+    }, []);
+
+    if (error) {
+        return (
+            <div className={`mt-10 ${styles.burgerModal}`}>
+                <ErrorGettingBurgerIngredients Error={error} />
+            </div>
+        )
+    }
+
     return (
-        <div className="mt-10">
-            <h1 className={`text text_type_main-large`}>Собери бургер</h1>
+        <div className={`mt-10 ${styles.burgerModal} p-4`}>
+            <div className={styles.modalTitleWrapper}>
+                <h1 className={`text text_type_main-large ${styles.modalTitle}`}>Собери бургер</h1>
+            </div>
             <IngredientsTab/>
+            <div className={styles.ingredientsList}>
+                    {
+                        ingredients.map((ingredient: FoodItem) => (
+                            <IngredientCard imgLink={ingredient.image} cost={ingredient.price} title={ingredient.name}/>
+                        ))
+                    }
+                </div>
+
+        </div>
+    )
+}
+
+interface GettingBurgerErrorProps {
+    Error: string;
+}
+
+const ErrorGettingBurgerIngredients: React.FC<GettingBurgerErrorProps> = (props) => {
+    return (
+        <div>
+            <h1 className={`text text_type_main-large`}>{props.Error}</h1>
         </div>
     )
 }
 
 const IngredientsTab = () => {
-    const [current, setCurrent] = React.useState('one')
+    const [current, setCurrent] = React.useState('Булки')
     return (
-        <div style={{ display: 'flex' }} className="mt-10">
-            <Tab value="one" active={current === 'one'} onClick={setCurrent}>
+        <div className={`mt-5 ${styles.tabs}`}>
+            <Tab value="Булки" active={current === 'Булки'} onClick={setCurrent}>
                 Булки
             </Tab>
-            <Tab value="two" active={current === 'two'} onClick={setCurrent}>
+            <Tab value="Соусы" active={current === 'Соусы'} onClick={setCurrent}>
                 Соусы
             </Tab>
-            <Tab value="three" active={current === 'three'} onClick={setCurrent}>
+            <Tab value="Начинки" active={current === 'Начинки'} onClick={setCurrent}>
                 Начинки
             </Tab>
         </div>)
@@ -56,11 +109,34 @@ const fetchFoodItems = async (): Promise<IngredientsApiResponse | string> => {
         if (!resp.data.success) {
             return apiErrorMsg;
         }
-
         return resp.data
     } catch (error) {
         return apiErrorMsg
     }
+}
+
+interface cardData {
+    imgLink: string,
+    cost : number,
+    title: string,
+}
+
+// const IngredientsSection
+
+const IngredientCard: React.FC<cardData> = (props) => {
+    return (
+        <div className={`${styles.burgerCard} m-6`}>
+            <div className={styles.counter}>
+                <Counter count={1}/>
+            </div>
+            <img src={props.imgLink} alt={props.title} className={`mb-1`}></img>
+            <div className={`mb-1 ${styles.cost}`}>
+                <span className={`text text_type_main-default mr-1`}>{props.cost}</span>
+                <CurrencyIcon type="primary" />
+            </div>
+            <span className={`text text_type_main-default`}>{props.title}</span>
+        </div>
+    )
 }
 
 export default BurgerBuilder
