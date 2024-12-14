@@ -128,7 +128,7 @@ interface cardData {
 
 const IngredientCard: React.FC<cardData> = (props) => {
     return (
-        <ol className={`${styles.burgerCard} m-6`}>
+        <ol className={`${styles.burgerCard} m-6 mb-8`}>
             <div className={styles.counter}>
                 <Counter count={1}/>
             </div>
@@ -150,8 +150,8 @@ interface ingredientSectionData {
 const IngredientsSection: React.FC<ingredientSectionData> = (props) => {
     const filteredIngredients = props.ingredients.filter(ingredient => ingredient.type === ingredientsTitleToEnum.get(props.title))
     return (
-        <ol className={`${styles.ingredientsSection}`}>
-            <div>
+        <ol className={`${styles.ingredientsSection} mt-10`}>
+            <div className={``}>
                 <h2 className={`text text_type_main-medium`}>{props.title}</h2>
             </div>
             <li className={`${styles.noNumbering} ${styles.ingredientsContainer}`}>
