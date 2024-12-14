@@ -133,7 +133,7 @@ const IngredientCard: React.FC<cardData> = (props) => {
                 <Counter count={1}/>
             </div>
             <img src={props.imgLink} alt={props.title} className={`mb-1`}></img>
-            <div className={`mb-1 ${styles.cost}`}>
+            <div className={`mb-1 cost`}>
                 <span className={`text text_type_main-default mr-1`}>{props.cost}</span>
                 <CurrencyIcon type="primary" />
             </div>
