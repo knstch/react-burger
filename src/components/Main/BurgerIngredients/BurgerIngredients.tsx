@@ -82,8 +82,8 @@ const BurgerIngredients = () => {
             <IngredientsTab/>
             <li className={`${styles.noNumbering} ${styles.ingredientsSectionContainer} mt-10`}>
                 {
-                    ingredientTypes.map((item, idx) => (
-                        <IngredientsSection key={idx} ingredients={ingredients} title={item} />
+                    ingredientTypes.map((title, idx) => (
+                        <IngredientsSection key={idx} ingredients={ingredients} title={title} />
                     ))
                 }
             </li>
