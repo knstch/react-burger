@@ -6,7 +6,6 @@ import {
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import React from "react";
 import styles from './BurgerContractor.module.css';
-import PropTypes from "prop-types";
 
 const BurgerContractor = () => {
     const mockData: CartItemProps[] = [
@@ -112,10 +111,10 @@ const ConstructorContainer: React.FC<CartItemsContainerProps> = (props) => {
 
 const CartItem: React.FC<CartItemProps> = (props) => {
     return (
-        <ol className={styles.cartItemContainer}>
+        <li className={styles.cartItemContainer}>
             <DragIcon type={"primary"}/>
             <ConstructorElement text={props.name} thumbnail={props.image} price={props.cost} extraClass={styles.constructorElement} />
-        </ol>
+        </li>
     )
 }
 
@@ -147,16 +146,5 @@ interface CartItemProps {
     cost: number,
     type: string,
 }
-
-CartItem.propTypes = PropTypes.shape({
-    image: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    cost: PropTypes.number.isRequired,
-    type: PropTypes.string.isRequired
-});
-
-ConstructorContainer.propTypes = PropTypes.shape({
-    items: PropTypes.arrayOf(CartItem.propTypes).isRequired
-});
 
 export default BurgerContractor;

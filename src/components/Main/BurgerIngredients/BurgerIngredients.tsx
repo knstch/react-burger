@@ -1,43 +1,22 @@
 import React, {useState, useEffect} from "react";
-import {Tab, CurrencyIcon, Counter} from "@ya.praktikum/react-developer-burger-ui-components";
+import {Tab} from "@ya.praktikum/react-developer-burger-ui-components";
 import axios from "axios";
 import styles from './BurgerIngredients.module.css';
-// @ts-ignore
-import PropTypes from 'prop-types';
+import IngredientsSection, {FoodItem} from './BurgerIngredientsSection'
 
-const ingredientsTitleToEnum = new Map<string, string>()
-ingredientsTitleToEnum.set("Булки", "bun")
-ingredientsTitleToEnum.set("Начинки", "main")
-ingredientsTitleToEnum.set("Соусы", "sauce")
-
-const burgerApiHost = `${process.env.REACT_APP_FOOD_API_HOST}/api/ingredients`
+const burgerApiHost = `${process.env.REACT_APP_FOOD_API_HOST}`
 
 interface IngredientsApiResponse {
     success: boolean;
     data: FoodItem[];
 }
 
-interface FoodItem {
-    _id: string;
-    name: string;
-    type: string;
-    proteins: number;
-    fat: number;
-    carbohydrates: number;
-    calories: number;
-    price: number;
-    image: string;
-    image_mobile: string;
-    image_large: string;
-    __v: number;
-}
-
 const apiErrorMsg = 'Упс! Космические тараканы сожрали интернет и я не могу получить ингредиенты'
+const ingredientTypes: string[] = ["Булки", "Соусы", "Начинки"]
 
 const BurgerIngredients = () => {
     const [error, setError] = useState("");
     const [ingredients, setIngredients] = useState<FoodItem[]>([])
-    const ingredientTypes: string[] = ["Булки", "Соусы", "Начинки"]
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -130,70 +109,5 @@ const fetchFoodItems = async (): Promise<IngredientsApiResponse | string> => {
         return apiErrorMsg
     }
 }
-
-interface cardData {
-    imgLink: string,
-    cost : number,
-    title: string,
-}
-
-const IngredientCard: React.FC<cardData> = (props) => {
-    return (
-        <ol className={`${styles.burgerCard} m-6 mb-8`}>
-            <div className={styles.counter}>
-                <Counter count={1}/>
-            </div>
-            <img src={props.imgLink} alt={props.title} className={`mb-1`}></img>
-            <div className={`mb-1 cost`}>
-                <span className={`text text_type_main-default mr-1`}>{props.cost}</span>
-                <CurrencyIcon type="primary" />
-            </div>
-            <span className={`text text_type_main-default ${styles.burgerCardTitle}`}>{props.title}</span>
-        </ol>
-    )
-}
-
-interface ingredientSectionData {
-    title: string
-    ingredients: FoodItem[]
-}
-
-const IngredientsSection: React.FC<ingredientSectionData> = (props) => {
-    const filteredIngredients = props.ingredients.filter(ingredient => ingredient.type === ingredientsTitleToEnum.get(props.title))
-    return (
-        <ol className={`${styles.ingredientsSection} mt-10`}>
-            <div className={``}>
-                <h2 className={`text text_type_main-medium`}>{props.title}</h2>
-            </div>
-            <li className={`${styles.noNumbering} ${styles.ingredientsContainer} pt-6 pl-4 mb-10`}>
-                {
-                    filteredIngredients.map((ingredient: FoodItem, i) => (
-                        <IngredientCard key={i} imgLink={ingredient.image} cost={ingredient.price} title={ingredient.name}/>
-                    ))
-                }
-            </li>
-        </ol>
-    )
-}
-
-IngredientCard.propTypes = PropTypes.shape({
-    _id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    proteins: PropTypes.number.isRequired,
-    fat: PropTypes.number.isRequired,
-    carbohydrates: PropTypes.number.isRequired,
-    calories: PropTypes.number.isRequired,
-    price: PropTypes.number.isRequired,
-    image: PropTypes.string.isRequired,
-    image_mobile: PropTypes.string.isRequired,
-    image_large: PropTypes.string.isRequired,
-    __v: PropTypes.number,
-});
-
-IngredientsSection.propTypes = PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    ingredients: PropTypes.arrayOf(IngredientCard.propTypes).isRequired,
-});
 
 export default BurgerIngredients;
