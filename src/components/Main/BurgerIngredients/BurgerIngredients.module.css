@@ -1,13 +1,3 @@
-.burgerModal {
-    width: 49%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    height: 700px;
-}
-
 .modalTitleWrapper {
     display: flex;
     flex-direction: row;

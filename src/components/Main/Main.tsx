@@ -1,11 +1,13 @@
 import BurgerIngredients from "./BurgerIngredients/BurgerIngredients";
-import BurgerContractor from "./BurgerContractor/BurgerContractor";
+import BurgerConstructor from "./BurgerContractor/BurgerConstructor";
+import React from "react";
+import {FoodItemsProps} from "../CommonInterfaces/interfaces";
 
-const Main = () => {
+const Main: React.FC<FoodItemsProps> = (props) => {
     return (
         <main>
-            <BurgerIngredients/>
-            <BurgerContractor/>
+            <BurgerIngredients FoodItems={props.FoodItems} />
+            <BurgerConstructor/>
         </main>
     )
 }

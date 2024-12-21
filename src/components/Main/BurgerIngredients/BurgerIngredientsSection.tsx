@@ -1,31 +1,12 @@
 import React from "react";
 import styles from "./BurgerIngredients.module.css";
 import IngredientCard from './BurgerIngredientCard'
+import {FoodItem, ingredientSectionData} from "../ApiContracts/Contracts";
 
 const ingredientsTitleToEnum = new Map<string, string>()
 ingredientsTitleToEnum.set("Булки", "bun")
 ingredientsTitleToEnum.set("Начинки", "main")
 ingredientsTitleToEnum.set("Соусы", "sauce")
-
-interface ingredientSectionData {
-    title: string
-    ingredients: FoodItem[]
-}
-
-export interface FoodItem {
-    _id: string;
-    name: string;
-    type: string;
-    proteins: number;
-    fat: number;
-    carbohydrates: number;
-    calories: number;
-    price: number;
-    image: string;
-    image_mobile: string;
-    image_large: string;
-    __v: number;
-}
 
 const IngredientsSection: React.FC<ingredientSectionData> = (props) => {
     const filteredIngredients = props.ingredients.filter(ingredient => ingredient.type === ingredientsTitleToEnum.get(props.title))
