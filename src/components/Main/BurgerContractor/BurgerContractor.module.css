@@ -56,3 +56,11 @@
     justify-content: center;
     gap: 8px;
 }
+
+.orderNumber {
+    text-shadow:
+            0 0 5px rgba(76, 76, 255, 1),
+            0 0 10px rgba(76, 76, 255, 1),
+            0 0 15px rgba(76, 76, 255, 0.5);
+    transition: text-shadow 0.3s ease;
+}

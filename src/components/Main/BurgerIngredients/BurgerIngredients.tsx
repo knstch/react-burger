@@ -8,7 +8,7 @@ const ingredientTypes: string[] = ["Булки", "Соусы", "Начинки"]
 
 const BurgerIngredients: React.FC<FoodItemsProps> = (props) => {
     return (
-        <section className={`mt-10 ${styles.burgerModal} p-4`}>
+        <section className={`mt-10 ${styles.ingredientsSectionContainer} p-4`}>
             <div className={styles.modalTitleWrapper}>
                 <h1 className={`text text_type_main-large ${styles.modalTitle}`}>Собери бургер</h1>
             </div>

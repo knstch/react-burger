@@ -38,9 +38,20 @@ ol {
   border-radius: 0;
 }
 
-.cost {
+.defaultFlexRow {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: row;
+}
+
+.defaultFlexCol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.pointer {
+  cursor: pointer;
 }

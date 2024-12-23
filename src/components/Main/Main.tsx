@@ -5,7 +5,7 @@ import {FoodItemsProps} from "../CommonInterfaces/interfaces";
 
 const Main: React.FC<FoodItemsProps> = (props) => {
     return (
-        <main>
+        <main className="mb-20">
             <BurgerIngredients FoodItems={props.FoodItems} />
             <BurgerConstructor/>
         </main>
