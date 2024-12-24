@@ -34,10 +34,10 @@ const IngredientCard: React.FC<cardData> = (props) => {
             </div>
             {
                 modalVisibility && (
-                    <ModalOverlay Title={"Детали ингредиента"} CloseFunc={toggleModal} Child={
+                    <ModalOverlay Title={"Детали ингредиента"} CloseFunc={toggleModal}>
                         <BurgerIngredientModal Name={props.title} Image={props.imgLink}
                                                NutritionFacts={props.nutritionFacts}/>
-                    }/>
+                    </ModalOverlay>
                 )
             }
         </ol>

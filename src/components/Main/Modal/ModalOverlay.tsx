@@ -5,8 +5,8 @@ import ReactDOM from "react-dom";
 
 interface ModalProps {
     Title: string
-    Child: React.ReactNode
     CloseFunc: () => void
+    children: React.ReactNode;
 }
 
 const modalRoot = document.getElementById('modal');
@@ -16,9 +16,13 @@ const ModalOverlay: React.FC<ModalProps> = (props) => {
         return null
     }
 
+    const handleOverlayClick = () => {
+        props.CloseFunc();
+    };
+
     return ReactDOM.createPortal(
         (
-            <div className={styles.modalOverlay}>
+            <div className={styles.modalOverlay} onClick={handleOverlayClick}>
                 <Modal {...props}/>
             </div>
         ), modalRoot
@@ -26,6 +30,10 @@ const ModalOverlay: React.FC<ModalProps> = (props) => {
 }
 
 const Modal: React.FC<ModalProps> = (props) => {
+    const handleModalClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+    };
+
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
@@ -41,13 +49,13 @@ const Modal: React.FC<ModalProps> = (props) => {
     }, [props])
 
     return (
-        <div className={styles.modalContainer}>
+        <div className={styles.modalContainer} onClick={handleModalClick}>
             <div className={`${styles.modalHeadline} text text_type_main-medium ml-10 mr-10 mt-15`}>
                 <h3 className={styles.modalTitle}>{props.Title}</h3>
                 <CloseIcon type="primary" onClick={() => props.CloseFunc()} className={`pointer`}/>
             </div>
             <div>
-                {props.Child}
+                {props.children}
             </div>
         </div>
     )

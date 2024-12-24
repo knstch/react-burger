@@ -142,9 +142,9 @@ const CheckOutBox: React.FC<CheckOutBoxProps> = (props) => {
             </Button>
             {
                 modalVisibility && (
-                    <ModalOverlay Title={""} CloseFunc={toggleModal} Child={
+                    <ModalOverlay Title={""} CloseFunc={toggleModal}>
                         <CheckoutModal/>
-                    }/>
+                    </ModalOverlay>
                 )
             }
         </div>
