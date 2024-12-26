@@ -6,8 +6,10 @@ import {
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import React from "react";
 import styles from './BurgerContractor.module.css';
+import ModalOverlay from "../Modal/ModalOverlay";
+import CheckoutModal from "./CheckoutModal";
 
-const BurgerContractor = () => {
+const BurgerConstructor = () => {
     const mockData: CartItemProps[] = [
         {
             image: "https://code.s3.yandex.net/react/code/salad.png",
@@ -111,10 +113,10 @@ const ConstructorContainer: React.FC<CartItemsContainerProps> = (props) => {
 
 const CartItem: React.FC<CartItemProps> = (props) => {
     return (
-        <li className={styles.cartItemContainer}>
+        <ol className={styles.cartItemContainer}>
             <DragIcon type={"primary"}/>
             <ConstructorElement text={props.name} thumbnail={props.image} price={props.cost} extraClass={styles.constructorElement} />
-        </li>
+        </ol>
     )
 }
 
@@ -123,15 +125,28 @@ interface CheckOutBoxProps {
 }
 
 const CheckOutBox: React.FC<CheckOutBoxProps> = (props) => {
+    const [modalVisibility, setModalVisibility] = React.useState(false)
+
+    const toggleModal = () => {
+        setModalVisibility(!modalVisibility)
+    }
+
     return (
         <div className={`mt-10 ${styles.checkOutBox}`}>
-            <div className={`cost mr-10`}>
+            <div className={`defaultFlexRow mr-10`}>
                 <span className={`text text_type_main-large mr-1`}>{props.totalAmount}</span>
                 <CurrencyIcon type="primary"/>
             </div>
-            <Button htmlType="button" type="primary" size="medium">
+            <Button htmlType="button" type="primary" size="medium" onClick={toggleModal}>
                 Оформить заказ
             </Button>
+            {
+                modalVisibility && (
+                    <ModalOverlay Title={""} CloseFunc={toggleModal}>
+                        <CheckoutModal/>
+                    </ModalOverlay>
+                )
+            }
         </div>
     )
 }
@@ -147,4 +162,4 @@ interface CartItemProps {
     type: string,
 }
 
-export default BurgerContractor;
+export default BurgerConstructor;
