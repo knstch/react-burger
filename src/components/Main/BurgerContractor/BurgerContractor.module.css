@@ -1,0 +1,66 @@
+.cartIngredientsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    justify-content: flex-start;
+    max-height: 600px;
+    overflow-y: auto;
+    width: 100%;
+    padding-right: 15px;
+}
+
+.cartItemsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.cartContainer {
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.checkOutBox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.constructorElement {
+    width: 536px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.cartItemContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.cartItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.orderNumber {
+    text-shadow:
+            0 0 5px rgba(76, 76, 255, 1),
+            0 0 10px rgba(76, 76, 255, 1),
+            0 0 15px rgba(76, 76, 255, 0.5);
+    transition: text-shadow 0.3s ease;
+}

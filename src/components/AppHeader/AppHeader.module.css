@@ -1,0 +1,55 @@
+.headerBtn {
+    background: inherit;
+    border: none;
+    cursor: pointer;
+    opacity: 75%;
+}
+
+.headerBtnLine {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    text-decoration: none;
+    gap: 8px;
+    font-weight: 400;
+
+}
+
+.headerBtn:hover {
+    opacity: 1;
+}
+
+.btnGroup {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    width: auto;
+    gap: 8px;
+}
+
+.header {
+    height: auto;
+    display: flex;
+    width: 70%;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+header {
+    background-color: #1C1C21;
+    width: 100%;
+    border: 2px #4C4CFF solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
