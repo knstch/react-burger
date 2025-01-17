@@ -1,22 +1,19 @@
 import React from "react";
 import styles from "./BurgerIngredients.module.css";
 import {Counter, CurrencyIcon} from "@ya.praktikum/react-developer-burger-ui-components";
-import BurgerIngredientModal from "./BurgerIngredientModal";
-import ModalOverlay from "../Modal/ModalOverlay";
-import {NutritionFacts} from "../../CommonInterfaces/interfaces";
+import {useSelector} from "react-redux";
+import {RootState} from "../../../services/store";
 
-interface cardData {
-    imgLink: string,
-    cost : number,
-    title: string,
-    nutritionFacts: NutritionFacts
+interface cardProps {
+    onClick: () => void,
+    id: string,
 }
 
-const IngredientCard: React.FC<cardData> = (props) => {
-    const [modalVisibility, setModalVisibility] = React.useState(false)
+const IngredientCard: React.FC<cardProps> = (props) => {
+    const item = useSelector((state: RootState) => state.ingredientsReducer.ingredientsList.data.find(ingredient => ingredient._id === props.id))
 
-    const toggleModal = () => {
-        setModalVisibility(!modalVisibility)
+    if (!item) {
+        return null
     }
 
     return (
@@ -24,22 +21,14 @@ const IngredientCard: React.FC<cardData> = (props) => {
             <div className={styles.counter}>
                 <Counter count={1}/>
             </div>
-            <div onClick={toggleModal} className={styles.burgerCardContent}>
-                <img src={props.imgLink} alt={props.title} className={`mb-1`}></img>
+            <div onClick={props.onClick} className={styles.burgerCardContent}>
+                <img src={item.image} alt={item.name} className={`mb-1`}></img>
                 <div className={`mb-1 defaultFlexRow`}>
-                    <span className={`text text_type_main-default mr-1`}>{props.cost}</span>
+                    <span className={`text text_type_main-default mr-1`}>{item.price}</span>
                     <CurrencyIcon type="primary"/>
                 </div>
-                <span className={`text text_type_main-default ${styles.burgerCardTitle}`}>{props.title}</span>
+                <span className={`text text_type_main-default ${styles.burgerCardTitle}`}>{item.name}</span>
             </div>
-            {
-                modalVisibility && (
-                    <ModalOverlay Title={"Детали ингредиента"} CloseFunc={toggleModal}>
-                        <BurgerIngredientModal Name={props.title} Image={props.imgLink}
-                                               NutritionFacts={props.nutritionFacts}/>
-                    </ModalOverlay>
-                )
-            }
         </ol>
     )
 }

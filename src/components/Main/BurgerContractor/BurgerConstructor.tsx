@@ -8,133 +8,78 @@ import React from "react";
 import styles from './BurgerContractor.module.css';
 import ModalOverlay from "../Modal/ModalOverlay";
 import CheckoutModal from "./CheckoutModal";
+import {useSelector} from "react-redux";
+import {RootState} from "../../../services/store";
 
 const BurgerConstructor = () => {
-    const mockData: CartItemProps[] = [
-        {
-            image: "https://code.s3.yandex.net/react/code/salad.png",
-            name: "Мини-салат Экзо-Плантаго",
-            cost: 228,
-            type: "main",
-        },
-        {
-            image: "https://code.s3.yandex.net/react/code/bun-02.png",
-            name: "Краторная булка N-200i",
-            cost: 228,
-            type: "bun",
-        },
-        {
-            image: "https://code.s3.yandex.net/react/code/salad.png",
-            name: "Мини-салат Экзо-Плантаго",
-            cost: 228,
-            type: "main",
-        },
-        {
-            image: "https://code.s3.yandex.net/react/code/salad.png",
-            name: "Мини-салат Экзо-Плантаго",
-            cost: 228,
-            type: "main",
-        },
-        {
-            image: "https://code.s3.yandex.net/react/code/salad.png",
-            name: "Мини-салат Экзо-Плантаго",
-            cost: 228,
-            type: "main",
-        },
-        {
-            image: "https://code.s3.yandex.net/react/code/salad.png",
-            name: "Мини-салат Экзо-Плантаго",
-            cost: 228,
-            type: "main",
-        },
-        {
-            image: "https://code.s3.yandex.net/react/code/salad.png",
-            name: "Мини-салат Экзо-Плантаго",
-            cost: 228,
-            type: "main",
-        },
-        {
-            image: "https://code.s3.yandex.net/react/code/salad.png",
-            name: "Мини-салат Экзо-Плантаго",
-            cost: 228,
-            type: "main",
-        },
-        {
-            image: "https://code.s3.yandex.net/react/code/salad.png",
-            name: "Мини-салат Экзо-Плантаго",
-            cost: 228,
-            type: "main",
-        },
-        {
-            image: "https://code.s3.yandex.net/react/code/salad.png",
-            name: "Мини-салат Экзо-Плантаго",
-            cost: 228,
-            type: "main",
-        },
-    ]
-
-    const totalCost = mockData.reduce((acc, val) => {
-        return acc + val.cost;
-    }, 0)
-
     return (
         <div className={`mt-25 ${styles.cartContainer}`}>
-            <ConstructorContainer items={mockData} />
-            <CheckOutBox totalAmount={totalCost}/>
+            <ConstructorContainer/>
+            <CheckOutBox/>
         </div>
     )
 }
 
-const ConstructorContainer: React.FC<CartItemsContainerProps> = (props) => {
-    const bun: CartItemProps | undefined = props.items.find(ingredient => ingredient.type === "bun")
-    const ingredientsWithNoBun: CartItemProps[] = props.items.filter(ingredient => ingredient.type !== "bun");
+const ConstructorContainer= () => {
+    const ingredients = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems)
+
+    const bun = ingredients.find(ingredient => ingredient.type === "bun")
+    const constructorIngredients = ingredients.filter(ingredient => ingredient.type !== "bun");
     return (
         <section className={styles.cartItemsContainer}>
             {
                 bun && (
-                    <ConstructorElement text={bun.name} price={bun.cost} thumbnail={bun.image} type={"top"} isLocked={true} extraClass={`ml-8 mr-4 ${styles.constructorElement}`}/>
+                    <ConstructorElement text={bun.name} price={bun.price} thumbnail={bun.image} type={"top"} isLocked={true} extraClass={`ml-8 mr-4 ${styles.constructorElement}`}/>
                 )
             }
             <li className={styles.cartIngredientsContainer}>
                 {
-                    ingredientsWithNoBun.map((item, idx) => (
-                        <CartItem key={idx} image={item.image} name={item.name} cost={item.cost} type={item.type}/>
+                    constructorIngredients.map((item, idx) => (
+                        <CartItem key={idx} id={item._id}/>
                     ))
                 }
             </li>
             {
                 bun && (
-                    <ConstructorElement text={bun.name} price={bun.cost} thumbnail={bun.image} type={"bottom"} isLocked={true} extraClass={`ml-8 mr-4 ${styles.constructorElement}`}/>
+                    <ConstructorElement text={bun.name} price={bun.price} thumbnail={bun.image} type={"bottom"} isLocked={true} extraClass={`ml-8 mr-4 ${styles.constructorElement}`}/>
                 )
             }
         </section>
     )
 }
 
+interface CartItemProps {
+    id: string
+}
+
 const CartItem: React.FC<CartItemProps> = (props) => {
+    const item = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems.find(ingredient => ingredient._id === props.id))
+
+    if (!item) {
+        return null
+    }
+
     return (
         <ol className={styles.cartItemContainer}>
             <DragIcon type={"primary"}/>
-            <ConstructorElement text={props.name} thumbnail={props.image} price={props.cost} extraClass={styles.constructorElement} />
+            <ConstructorElement text={item.name} thumbnail={item.image} price={item.price} extraClass={styles.constructorElement} />
         </ol>
     )
 }
 
-interface CheckOutBoxProps {
-    totalAmount: number
-}
-
-const CheckOutBox: React.FC<CheckOutBoxProps> = (props) => {
+const CheckOutBox = () => {
     const [modalVisibility, setModalVisibility] = React.useState(false)
 
     const toggleModal = () => {
         setModalVisibility(!modalVisibility)
     }
 
+    const totalCost = useSelector((state: RootState) => state.constructorIngredientsReducer.totalCost)
+
     return (
         <div className={`mt-10 ${styles.checkOutBox}`}>
             <div className={`defaultFlexRow mr-10`}>
-                <span className={`text text_type_main-large mr-1`}>{props.totalAmount}</span>
+                <span className={`text text_type_main-large mr-1`}>{totalCost}</span>
                 <CurrencyIcon type="primary"/>
             </div>
             <Button htmlType="button" type="primary" size="medium" onClick={toggleModal}>
@@ -149,17 +94,6 @@ const CheckOutBox: React.FC<CheckOutBoxProps> = (props) => {
             }
         </div>
     )
-}
-
-interface CartItemsContainerProps {
-    items: CartItemProps[]
-}
-
-interface CartItemProps {
-    image: string,
-    name: string,
-    cost: number,
-    type: string,
 }
 
 export default BurgerConstructor;

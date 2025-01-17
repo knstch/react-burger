@@ -55,7 +55,7 @@
 .ingredientsSectionContainer {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 600px;
     max-height: 900px;
     overflow-y: scroll;
 }
