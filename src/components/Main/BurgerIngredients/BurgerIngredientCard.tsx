@@ -3,6 +3,8 @@ import styles from "./BurgerIngredients.module.css";
 import {Counter, CurrencyIcon} from "@ya.praktikum/react-developer-burger-ui-components";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
+import {useDrag} from "react-dnd";
+import {DROP_TYPE_INGREDIENT} from "../../../services/dropTypes";
 
 interface cardProps {
     onClick: () => void,
@@ -11,6 +13,17 @@ interface cardProps {
 
 const IngredientCard: React.FC<cardProps> = (props) => {
     const item = useSelector((state: RootState) => state.ingredientsReducer.ingredientsList.data.find(ingredient => ingredient._id === props.id))
+
+    const [{isDrag}, dragTarget] = useDrag({
+        type: DROP_TYPE_INGREDIENT,
+        item: {item},
+        collect: monitor => ({
+            isDrag: monitor.isDragging()
+        })
+    })
+
+    const dragTargetRef = React.useRef<HTMLDivElement>(null);
+    dragTarget(dragTargetRef)
 
     if (!item) {
         return null
@@ -21,7 +34,7 @@ const IngredientCard: React.FC<cardProps> = (props) => {
             <div className={styles.counter}>
                 <Counter count={1}/>
             </div>
-            <div onClick={props.onClick} className={styles.burgerCardContent}>
+            <div onClick={props.onClick} className={styles.burgerCardContent} ref={dragTargetRef}>
                 <img src={item.image} alt={item.name} className={`mb-1`}></img>
                 <div className={`mb-1 defaultFlexRow`}>
                     <span className={`text text_type_main-default mr-1`}>{item.price}</span>

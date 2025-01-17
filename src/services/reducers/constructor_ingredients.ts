@@ -1,8 +1,15 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {FoodItem} from "../../components/Main/ApiContracts/Contracts";
+
+export interface FoodItemShorten {
+    image: string,
+    name: string,
+    price: number,
+    type: string,
+    _id: string,
+}
 
 interface burgerConstructorData {
-    foodItems: FoodItem[],
+    foodItems: FoodItemShorten[],
     totalCost: number,
 }
 
@@ -11,18 +18,21 @@ const initialState: burgerConstructorData = {
     totalCost: 0,
 }
 
-const constructorIngredientsSlice = createSlice({
+export const constructorIngredientsSlice = createSlice({
     name: "constructorIngredients",
     initialState: initialState,
     reducers: {
         addIngredient: (state, action) => {
-            state.foodItems.push(action.payload)
+            return {
+                ...state,
+                foodItems: [...state.foodItems, action.payload.item],
+            }
         },
         getTotalCost: (state, _) => {
             const cost = state.foodItems.reduce((acc, val) => {
                 return acc + val.price;
             }, 0)
-            state = {
+            return {
                 ...state,
                 totalCost: cost,
             }

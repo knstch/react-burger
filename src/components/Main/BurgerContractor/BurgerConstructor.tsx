@@ -8,12 +8,31 @@ import React from "react";
 import styles from './BurgerContractor.module.css';
 import ModalOverlay from "../Modal/ModalOverlay";
 import CheckoutModal from "./CheckoutModal";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
+import {useDrop} from "react-dnd";
+import {constructorIngredientsSlice, FoodItemShorten} from "../../../services/reducers/constructor_ingredients";
+import {DROP_TYPE_INGREDIENT} from "../../../services/dropTypes";
 
 const BurgerConstructor = () => {
+    const {actions} = constructorIngredientsSlice
+    const dispatch = useDispatch();
+
+    const [{isHover}, dropTarget] = useDrop({
+        accept: DROP_TYPE_INGREDIENT,
+        drop(item: FoodItemShorten) {
+            dispatch(actions.addIngredient(item))
+        },
+        collect: monitor => ({
+            isHover: monitor.isOver(),
+        })
+    })
+
+    const dropTargetRef = React.useRef<HTMLDivElement>(null);
+    dropTarget(dropTargetRef)
+
     return (
-        <div className={`mt-25 ${styles.cartContainer}`}>
+        <div className={`mt-25 ${styles.cartContainer}`} ref={dropTargetRef}>
             <ConstructorContainer/>
             <CheckOutBox/>
         </div>
@@ -25,6 +44,7 @@ const ConstructorContainer= () => {
 
     const bun = ingredients.find(ingredient => ingredient.type === "bun")
     const constructorIngredients = ingredients.filter(ingredient => ingredient.type !== "bun");
+
     return (
         <section className={styles.cartItemsContainer}>
             {
