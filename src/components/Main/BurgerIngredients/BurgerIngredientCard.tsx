@@ -5,6 +5,7 @@ import {useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
 import {useDrag} from "react-dnd";
 import {DROP_TYPE_INGREDIENT} from "../../../services/dropTypes";
+import {selectItemsInConstructor} from "../../../services/selectors";
 
 interface cardProps {
     onClick: () => void,
@@ -14,7 +15,9 @@ interface cardProps {
 const IngredientCard: React.FC<cardProps> = (props) => {
     const item = useSelector((state: RootState) => state.ingredientsReducer.ingredientsList.data.find(ingredient => ingredient._id === props.id))
 
-    const [{isDrag}, dragTarget] = useDrag({
+    const itemsInConstructor = useSelector((state: RootState) => selectItemsInConstructor(state, props.id))
+
+    const [, dragTarget] = useDrag({
         type: DROP_TYPE_INGREDIENT,
         item: {item},
         collect: monitor => ({
@@ -32,7 +35,7 @@ const IngredientCard: React.FC<cardProps> = (props) => {
     return (
         <ol className={`${styles.burgerCard} m-6 mb-8 pointer`}>
             <div className={styles.counter}>
-                <Counter count={1}/>
+                <Counter count={itemsInConstructor.length} />
             </div>
             <div onClick={props.onClick} className={styles.burgerCardContent} ref={dragTargetRef}>
                 <img src={item.image} alt={item.name} className={`mb-1`}></img>

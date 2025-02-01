@@ -10,18 +10,26 @@ import ModalOverlay from "../Modal/ModalOverlay";
 import CheckoutModal from "./CheckoutModal";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
-import {useDrop} from "react-dnd";
+import {DndProvider, useDrag, useDrop} from "react-dnd";
 import {constructorIngredientsSlice, FoodItemShorten} from "../../../services/reducers/constructor_ingredients";
-import {DROP_TYPE_INGREDIENT} from "../../../services/dropTypes";
+import {DROP_TYPE_CART_ITEM, DROP_TYPE_INGREDIENT} from "../../../services/dropTypes";
+import axios from "axios";
+import {apiErrorMsg} from "../../../common/common";
+import {checkoutSlice} from "../../../services/reducers/checkout";
+import {HTML5Backend} from "react-dnd-html5-backend";
+import type { Identifier, XYCoord } from 'dnd-core'
+
+const burgerApiHost = `${process.env.REACT_APP_FOOD_API_HOST+"/orders"}`
 
 const BurgerConstructor = () => {
     const {actions} = constructorIngredientsSlice
-    const dispatch = useDispatch();
+    const dispatch = useDispatch()
 
-    const [{isHover}, dropTarget] = useDrop({
+    const [, dropTarget] = useDrop({
         accept: DROP_TYPE_INGREDIENT,
         drop(item: FoodItemShorten) {
             dispatch(actions.addIngredient(item))
+            dispatch(actions.getTotalCost(''))
         },
         collect: monitor => ({
             isHover: monitor.isOver(),
@@ -33,7 +41,9 @@ const BurgerConstructor = () => {
 
     return (
         <div className={`mt-25 ${styles.cartContainer}`} ref={dropTargetRef}>
-            <ConstructorContainer/>
+            <DndProvider backend={HTML5Backend}>
+                <ConstructorContainer/>
+            </DndProvider>
             <CheckOutBox/>
         </div>
     )
@@ -41,27 +51,43 @@ const BurgerConstructor = () => {
 
 const ConstructorContainer= () => {
     const ingredients = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems)
+    const bun = useSelector((state: RootState) => state.constructorIngredientsReducer.bun)
 
-    const bun = ingredients.find(ingredient => ingredient.type === "bun")
     const constructorIngredients = ingredients.filter(ingredient => ingredient.type !== "bun");
+
+    const dropTargetRef = React.useRef<HTMLDivElement>(null);
 
     return (
         <section className={styles.cartItemsContainer}>
             {
                 bun && (
-                    <ConstructorElement text={bun.name} price={bun.price} thumbnail={bun.image} type={"top"} isLocked={true} extraClass={`ml-8 mr-4 ${styles.constructorElement}`}/>
+                    <ConstructorElement
+                        text={bun.name}
+                        price={bun.price}
+                        thumbnail={bun.image}
+                        type={"top"}
+                        isLocked={true}
+                        extraClass={`ml-8 mr-4 ${styles.constructorElement}`}
+                    />
                 )
             }
-            <li className={styles.cartIngredientsContainer}>
+            <div ref={dropTargetRef} className={styles.cartIngredientsContainer}>
                 {
                     constructorIngredients.map((item, idx) => (
-                        <CartItem key={idx} id={item._id}/>
+                        <CartItem key={idx} id={item._id} index={idx} />
                     ))
                 }
-            </li>
+            </div>
             {
                 bun && (
-                    <ConstructorElement text={bun.name} price={bun.price} thumbnail={bun.image} type={"bottom"} isLocked={true} extraClass={`ml-8 mr-4 ${styles.constructorElement}`}/>
+                    <ConstructorElement
+                        text={bun.name}
+                        price={bun.price}
+                        thumbnail={bun.image}
+                        type={"bottom"}
+                        isLocked={true}
+                        extraClass={`ml-8 mr-4 ${styles.constructorElement}`}
+                    />
                 )
             }
         </section>
@@ -70,31 +96,134 @@ const ConstructorContainer= () => {
 
 interface CartItemProps {
     id: string
+    index: number
 }
 
-const CartItem: React.FC<CartItemProps> = (props) => {
-    const item = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems.find(ingredient => ingredient._id === props.id))
+interface DragItem {
+    index: number
+    id: string
+    type: string
+}
+
+const CartItem: React.FC<CartItemProps> = ({id, index}) => {
+    const dispatch = useDispatch()
+    const {actions} = constructorIngredientsSlice
+
+    const item = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems.find(ingredient => ingredient._id === id))
+    const itemIdx = useSelector((state: RootState) =>
+        state.constructorIngredientsReducer.foodItems.findIndex(
+            ingredient => ingredient._id === id
+        )
+    )
+
+    const ref = React.useRef<HTMLDivElement>(null);
+    const [{ handlerId }, drop] = useDrop<
+        DragItem,
+        void,
+        { handlerId: Identifier | null }
+    >({
+        accept: DROP_TYPE_CART_ITEM,
+        collect(monitor) {
+            return {
+                handlerId: monitor.getHandlerId(),
+            }
+        },
+        hover: (item: DragItem, monitor) => {
+            if (!ref.current) {
+                return
+            }
+            const dragIndex = item.index
+            const hoverIndex = index
+
+            if (dragIndex === hoverIndex) {
+                return
+            }
+
+            const hoverBoundingRect = ref.current?.getBoundingClientRect()
+
+            const hoverMiddleY =
+                (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
+
+            const clientOffset = monitor.getClientOffset()
+
+            const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top
+
+            if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+                return
+            }
+
+            if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+                return
+            }
+
+            dispatch(actions.moveIngredient({dragIndex, hoverIndex}))
+
+            item.index = hoverIndex
+        },
+    })
+
+    const [, drag] = useDrag({
+        type:DROP_TYPE_CART_ITEM,
+        item: () => {
+            return { id, index }
+        },
+        collect: (monitor: any) => ({
+            isDragging: monitor.isDragging(),
+        }),
+    })
 
     if (!item) {
         return null
     }
 
+    const handleRemove = () => {
+        dispatch(actions.removeIngredient(itemIdx))
+    }
+
+    drag(drop(ref))
     return (
-        <ol className={styles.cartItemContainer}>
+        <div className={styles.cartItemContainer} ref={ref} data-handler-id={handlerId}>
             <DragIcon type={"primary"}/>
-            <ConstructorElement text={item.name} thumbnail={item.image} price={item.price} extraClass={styles.constructorElement} />
-        </ol>
+            <ConstructorElement text={item.name} thumbnail={item.image} price={item.price} extraClass={styles.constructorElement} handleClose={handleRemove} />
+        </div>
     )
 }
 
 const CheckOutBox = () => {
+    const dispatch = useDispatch()
+    const {actions} = checkoutSlice
+
+    const foodItems = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems)
+
     const [modalVisibility, setModalVisibility] = React.useState(false)
 
     const toggleModal = () => {
         setModalVisibility(!modalVisibility)
     }
 
+    const extractIds = (): string[] => {
+        let ids: string[] = []
+
+        foodItems.forEach((foodItem, _) => {
+            ids.push(foodItem._id)
+        })
+
+        return ids
+    }
+
     const totalCost = useSelector((state: RootState) => state.constructorIngredientsReducer.totalCost)
+
+    const placeOrder = async () => {
+        const response = await axios.post(burgerApiHost, {
+            "ingredients": extractIds(),
+        })
+
+        if (!response.data.success) {
+            throw new Error(apiErrorMsg);
+        }
+
+        return response.data
+    }
 
     return (
         <div className={`mt-10 ${styles.checkOutBox}`}>
@@ -102,7 +231,14 @@ const CheckOutBox = () => {
                 <span className={`text text_type_main-large mr-1`}>{totalCost}</span>
                 <CurrencyIcon type="primary"/>
             </div>
-            <Button htmlType="button" type="primary" size="medium" onClick={toggleModal}>
+            <Button htmlType="button" type="primary" size="medium" onClick={() => {
+                if (foodItems.length > 0) {
+                    placeOrder().then(res => {
+                        dispatch(actions.setApiResponse(res))
+                        toggleModal()
+                    })
+                }
+            }}>
                 Оформить заказ
             </Button>
             {

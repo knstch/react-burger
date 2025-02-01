@@ -24,6 +24,9 @@ export const ingredientsSlice = createSlice({
     reducers: {
         setOpenedCard: (state, action) => {
             state.activeOpenedCardId = action.payload
+        },
+        removeOpenedCard: (state, _) => {
+            state.activeOpenedCardId = ""
         }
     },
     extraReducers: (builder) => {

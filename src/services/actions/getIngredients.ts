@@ -3,7 +3,7 @@ import {createAsyncThunk} from "@reduxjs/toolkit";
 import axios from "axios";
 import {apiErrorMsg} from "../../common/common";
 
-const burgerApiHost = `${process.env.REACT_APP_FOOD_API_HOST}`
+const burgerApiHost = `${process.env.REACT_APP_FOOD_API_HOST+"/ingredients"}`
 
 const fetchIngredients = createAsyncThunk<IngredientsApiResponse, void>(
     'ingredients/fetchIngredients',

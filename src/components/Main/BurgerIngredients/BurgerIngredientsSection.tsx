@@ -43,7 +43,10 @@ const IngredientsSection: React.FC<ingredientSectionData> = (props) => {
             </li>
             {
                 modalVisibility && (
-                    <ModalOverlay Title={"Детали ингредиента"} CloseFunc={toggleModal}>
+                    <ModalOverlay Title={"Детали ингредиента"} CloseFunc={() => {
+                        toggleModal()
+                        dispatch(actions.removeOpenedCard(''))
+                    }}>
                         <BurgerIngredientModal/>
                     </ModalOverlay>
                 )
