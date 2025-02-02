@@ -1,7 +1,13 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import update from 'immutability-helper';
+import {v4 as uuid} from 'uuid';
 
-export interface FoodItemShorten {
+export interface FoodItem {
+    item: FoodItemShorten,
+    uniqueId: string
+}
+
+interface FoodItemShorten {
     image: string,
     name: string,
     price: number,
@@ -10,8 +16,8 @@ export interface FoodItemShorten {
 }
 
 interface burgerConstructorData {
-    foodItems: FoodItemShorten[],
-    bun: FoodItemShorten | null,
+    foodItems: FoodItem[],
+    bun: FoodItem | null,
     totalCost: number,
 }
 
@@ -25,27 +31,37 @@ export const constructorIngredientsSlice = createSlice({
     name: "constructorIngredients",
     initialState: initialState,
     reducers: {
-        addIngredient: (state, action) => {
-            if (action.payload.item.type === 'bun') {
+        addIngredient: {
+            reducer: (state, action: PayloadAction<any>) => {
+                    if (action.payload.item.type === 'bun') {
+                        return {
+                            ...state,
+                            bun: action.payload,
+                        }
+                    }
+                    console.log(action.payload.item)
+                    return {
+                        ...state,
+                        foodItems: [...state.foodItems, action.payload],
+                    }
+                    },
+            prepare: (ingredient: any) => {
                 return {
-                    ...state,
-                    bun: action.payload.item,
+                    payload: {
+                        ...ingredient,
+                        uniqueId: uuid()
+                    }
                 }
-            }
-
-            return {
-                ...state,
-                foodItems: [...state.foodItems, action.payload.item],
-            }
-        },
+            },
+},
         getTotalCost: (state, _) => {
             const cost = state.foodItems.reduce((acc, val) => {
-                return acc + val.price
+                return acc + val.item.price
             }, 0)
 
             let bunCost: number = 0
             if (state.bun !== null) {
-                bunCost = state.bun.price * 2
+                bunCost = state.bun.item.price * 2
             }
             return {
                 ...state,
@@ -60,7 +76,7 @@ export const constructorIngredientsSlice = createSlice({
             }
 
             const cost = foodItems.reduce((acc, val) => {
-                return acc + val.price
+                return acc + val.item.price
             }, 0)
 
             return {
@@ -93,8 +109,9 @@ export const constructorIngredientsSlice = createSlice({
                 foodItems: updatedFoodItems,
             }
         },
-
-
+        clearCart: (state, _) => {
+            return initialState
+        }
     }
 })
 

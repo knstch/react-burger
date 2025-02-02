@@ -33,8 +33,8 @@ const IngredientsSection: React.FC<ingredientSectionData> = (props) => {
             </div>
             <li className={`${styles.noNumbering} ${styles.ingredientsContainer} pt-6 pl-4 mb-10`}>
                 {
-                    filteredIngredients.map((ingredient: FoodItem, i) => (
-                        <IngredientCard key={i} id={ingredient._id} onClick={() => {
+                    filteredIngredients.map((ingredient: FoodItem, _) => (
+                        <IngredientCard key={ingredient._id} id={ingredient._id} onClick={() => {
                             toggleModal()
                             dispatch(actions.setOpenedCard(ingredient._id))
                         }}/>

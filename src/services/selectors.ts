@@ -5,5 +5,5 @@ const selectFoodItems = (state: RootState) => state.constructorIngredientsReduce
 
 export const selectItemsInConstructor = createSelector(
     [selectFoodItems, (state: RootState, id: string) => id],
-    (foodItems, id) => foodItems.filter(item => item._id === id)
+    (foodItems, id) => foodItems.filter(item => item.item._id === id)
 )

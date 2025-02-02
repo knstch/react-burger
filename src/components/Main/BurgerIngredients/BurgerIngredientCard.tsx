@@ -20,7 +20,7 @@ const IngredientCard: React.FC<cardProps> = (props) => {
     )
 
     const idOfBunInConstructor = useSelector(
-        (state: RootState) => state.constructorIngredientsReducer.bun?._id
+        (state: RootState) => state.constructorIngredientsReducer.bun?.item._id
     )
 
     const initialCount = useSelector((state: RootState) =>

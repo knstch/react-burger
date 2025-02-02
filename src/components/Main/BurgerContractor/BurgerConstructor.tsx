@@ -11,13 +11,13 @@ import CheckoutModal from "./CheckoutModal";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
 import {DndProvider, useDrag, useDrop} from "react-dnd";
-import {constructorIngredientsSlice, FoodItemShorten} from "../../../services/reducers/constructor_ingredients";
+import {constructorIngredientsSlice, FoodItem} from "../../../services/reducers/constructor_ingredients";
 import {DROP_TYPE_CART_ITEM, DROP_TYPE_INGREDIENT} from "../../../common/dropTypes";
 import axios from "axios";
 import {apiErrorMsg} from "../../../common/common";
 import {checkoutSlice} from "../../../services/reducers/checkout";
 import {HTML5Backend} from "react-dnd-html5-backend";
-import type { Identifier, XYCoord } from 'dnd-core'
+import type { Identifier, XYCoord } from 'dnd-core';
 
 const burgerApiHost = `${process.env.REACT_APP_FOOD_API_HOST+"/orders"}`
 
@@ -27,7 +27,7 @@ const BurgerConstructor = () => {
 
     const [, dropTarget] = useDrop({
         accept: DROP_TYPE_INGREDIENT,
-        drop(item: FoodItemShorten) {
+        drop(item: FoodItem) {
             dispatch(actions.addIngredient(item))
             dispatch(actions.getTotalCost(''))
         },
@@ -53,7 +53,7 @@ const ConstructorContainer= () => {
     const ingredients = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems)
     const bun = useSelector((state: RootState) => state.constructorIngredientsReducer.bun)
 
-    const constructorIngredients = ingredients.filter(ingredient => ingredient.type !== "bun");
+    const constructorIngredients = ingredients.filter(ingredient => ingredient.item.type !== "bun");
 
     const dropTargetRef = React.useRef<HTMLDivElement>(null);
 
@@ -62,9 +62,9 @@ const ConstructorContainer= () => {
             {
                 bun && (
                     <ConstructorElement
-                        text={bun.name}
-                        price={bun.price}
-                        thumbnail={bun.image}
+                        text={bun.item.name}
+                        price={bun.item.price}
+                        thumbnail={bun.item.image}
                         type={"top"}
                         isLocked={true}
                         extraClass={`ml-8 mr-4 ${styles.constructorElement}`}
@@ -74,16 +74,16 @@ const ConstructorContainer= () => {
             <div ref={dropTargetRef} className={styles.cartIngredientsContainer}>
                 {
                     constructorIngredients.map((item, idx) => (
-                        <CartItem key={idx} id={item._id} index={idx} />
+                        <CartItem key={item.uniqueId} id={item.item._id} index={idx} />
                     ))
                 }
             </div>
             {
                 bun && (
                     <ConstructorElement
-                        text={bun.name}
-                        price={bun.price}
-                        thumbnail={bun.image}
+                        text={bun.item.name}
+                        price={bun.item.price}
+                        thumbnail={bun.item.image}
                         type={"bottom"}
                         isLocked={true}
                         extraClass={`ml-8 mr-4 ${styles.constructorElement}`}
@@ -109,10 +109,10 @@ const CartItem: React.FC<CartItemProps> = ({id, index}) => {
     const dispatch = useDispatch()
     const {actions} = constructorIngredientsSlice
 
-    const item = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems.find(ingredient => ingredient._id === id))
+    const ingredient = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems.find(ingredient => ingredient.item._id === id))
     const itemIdx = useSelector((state: RootState) =>
         state.constructorIngredientsReducer.foodItems.findIndex(
-            ingredient => ingredient._id === id
+            ingredient => ingredient.item._id === id
         )
     )
 
@@ -172,7 +172,7 @@ const CartItem: React.FC<CartItemProps> = ({id, index}) => {
         }),
     })
 
-    if (!item) {
+    if (!ingredient) {
         return null
     }
 
@@ -184,14 +184,15 @@ const CartItem: React.FC<CartItemProps> = ({id, index}) => {
     return (
         <div className={styles.cartItemContainer} ref={ref} data-handler-id={handlerId}>
             <DragIcon type={"primary"}/>
-            <ConstructorElement text={item.name} thumbnail={item.image} price={item.price} extraClass={styles.constructorElement} handleClose={handleRemove} />
+            <ConstructorElement text={ingredient.item.name} thumbnail={ingredient.item.image} price={ingredient.item.price} extraClass={styles.constructorElement} handleClose={handleRemove} />
         </div>
     )
 }
 
 const CheckOutBox = () => {
     const dispatch = useDispatch()
-    const {actions} = checkoutSlice
+    const {actions: checkoutActions} = checkoutSlice
+    const {actions: constructorActions} = constructorIngredientsSlice
 
     const foodItems = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems)
     const bun = useSelector((state: RootState) => state.constructorIngredientsReducer.bun)
@@ -206,11 +207,11 @@ const CheckOutBox = () => {
         let ids: string[] = []
 
         if (bun) {
-            ids.push(bun._id)
+            ids.push(bun.item._id)
         }
 
         foodItems.forEach((foodItem, _) => {
-            ids.push(foodItem._id)
+            ids.push(foodItem.item._id)
         })
 
         return ids
@@ -239,9 +240,9 @@ const CheckOutBox = () => {
             <Button htmlType="button" type="primary" size="medium" onClick={() => {
                 if (foodItems.length > 0 && bun) {
                     placeOrder().then(res => {
-                        dispatch(actions.setApiResponse(res))
+                        dispatch(checkoutActions.setApiResponse(res))
                         toggleModal()
-                    })
+                    }).then(_ => dispatch(constructorActions.clearCart('')))
                 }
             }}>
                 Оформить заказ
