@@ -12,7 +12,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
 import {DndProvider, useDrag, useDrop} from "react-dnd";
 import {constructorIngredientsSlice, FoodItemShorten} from "../../../services/reducers/constructor_ingredients";
-import {DROP_TYPE_CART_ITEM, DROP_TYPE_INGREDIENT} from "../../../services/dropTypes";
+import {DROP_TYPE_CART_ITEM, DROP_TYPE_INGREDIENT} from "../../../common/dropTypes";
 import axios from "axios";
 import {apiErrorMsg} from "../../../common/common";
 import {checkoutSlice} from "../../../services/reducers/checkout";
@@ -194,6 +194,7 @@ const CheckOutBox = () => {
     const {actions} = checkoutSlice
 
     const foodItems = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems)
+    const bun = useSelector((state: RootState) => state.constructorIngredientsReducer.bun)
 
     const [modalVisibility, setModalVisibility] = React.useState(false)
 
@@ -203,6 +204,10 @@ const CheckOutBox = () => {
 
     const extractIds = (): string[] => {
         let ids: string[] = []
+
+        if (bun) {
+            ids.push(bun._id)
+        }
 
         foodItems.forEach((foodItem, _) => {
             ids.push(foodItem._id)
@@ -218,7 +223,7 @@ const CheckOutBox = () => {
             "ingredients": extractIds(),
         })
 
-        if (!response.data.success) {
+        if (!response.data.success || response.status !== 200) {
             throw new Error(apiErrorMsg);
         }
 
@@ -232,7 +237,7 @@ const CheckOutBox = () => {
                 <CurrencyIcon type="primary"/>
             </div>
             <Button htmlType="button" type="primary" size="medium" onClick={() => {
-                if (foodItems.length > 0) {
+                if (foodItems.length > 0 && bun) {
                     placeOrder().then(res => {
                         dispatch(actions.setApiResponse(res))
                         toggleModal()
