@@ -1,6 +1,5 @@
 export interface ingredientSectionData {
     title: string
-    ingredients: FoodItem[]
 }
 
 export interface FoodItem {
@@ -21,4 +20,6 @@ export interface FoodItem {
 export interface IngredientsApiResponse {
     success: boolean;
     data: FoodItem[];
+    loading: boolean;
+    error: string;
 }

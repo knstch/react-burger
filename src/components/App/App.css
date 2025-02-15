@@ -53,3 +53,7 @@
   align-items: center;
   height: 700px;
 }
+
+.constructor-element__row {
+  width: 100%;
+}
