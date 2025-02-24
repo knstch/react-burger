@@ -57,3 +57,18 @@
 .constructor-element__row {
   width: 100%;
 }
+
+.inputForm {
+  width: 100%;
+  padding: 20px 24px !important;
+  background-color: rgba(47, 47, 55, 1);
+  border-radius: 40px;
+  border: none;
+  box-sizing: border-box;
+  color: #FFF;
+  line-height: 24px;
+}
+
+a {
+  text-decoration: none;
+}

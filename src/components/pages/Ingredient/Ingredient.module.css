@@ -1,0 +1,20 @@
+.ingredientContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.nutritionFacts {
+    display: flex;
+    gap: 20px;
+}
+
+.ingredientSection {
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}

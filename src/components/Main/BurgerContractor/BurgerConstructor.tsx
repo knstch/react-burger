@@ -231,6 +231,8 @@ const CheckOutBox = () => {
         return response.data
     }
 
+    const isAuthorized = useSelector((state: RootState) => state.authReducer.IsAuthorized);
+
     return (
         <div className={`mt-10 ${styles.checkOutBox}`}>
             <div className={`defaultFlexRow mr-10`}>
@@ -244,7 +246,7 @@ const CheckOutBox = () => {
                         toggleModal()
                     }).then(_ => dispatch(constructorActions.clearCart('')))
                 }
-            }}>
+            }} disabled={!isAuthorized}>
                 Оформить заказ
             </Button>
             {

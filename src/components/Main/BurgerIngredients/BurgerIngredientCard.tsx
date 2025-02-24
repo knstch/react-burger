@@ -1,18 +1,23 @@
 import React from "react";
 import styles from "./BurgerIngredients.module.css";
 import {Counter, CurrencyIcon} from "@ya.praktikum/react-developer-burger-ui-components";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
 import {useDrag} from "react-dnd";
 import {DROP_TYPE_INGREDIENT} from "../../../common/dropTypes";
 import {selectItemsInConstructor} from "../../../services/selectors";
+import {Link, useLocation} from "react-router-dom";
+import {ingredientsSlice} from "../../../services/reducers/ingredients";
 
 interface cardProps {
-    onClick: () => void,
     id: string,
 }
 
 const IngredientCard: React.FC<cardProps> = (props) => {
+    const location = useLocation();
+    const dispatch = useDispatch();
+    const { actions } = ingredientsSlice
+
     const item = useSelector((state: RootState) =>
         state.ingredientsReducer.ingredientsList.data.find(
             (ingredient) => ingredient._id === props.id
@@ -53,29 +58,30 @@ const IngredientCard: React.FC<cardProps> = (props) => {
     }
 
     return (
-        <ol className={`${styles.burgerCard} m-6 mb-8 pointer`}>
-            <div className={styles.counter}>
-                <Counter count={itemsInConstructor} />
-            </div>
-            <div
-                onClick={props.onClick}
-                className={styles.burgerCardContent}
-                ref={dragTargetRef}
-            >
-                <img src={item.image} alt={item.name} className={`mb-1`} />
-                <div className={`mb-1 defaultFlexRow`}>
+        <Link onClick={() => {
+            dispatch(actions.setOpenedCard(props.id))
+        }} to={`/ingredients/${props.id}`} state={{background: location}} className={`${styles.burgerCard} m-6 mb-8 pointer`}>
+                <div className={styles.counter}>
+                    <Counter count={itemsInConstructor}/>
+                </div>
+                <div
+                    className={styles.burgerCardContent}
+                    ref={dragTargetRef}
+                >
+                    <img src={item.image} alt={item.name} className={`mb-1`}/>
+                    <div className={`mb-1 defaultFlexRow`}>
           <span className={`text text_type_main-default mr-1`}>
             {item.price}
           </span>
-                    <CurrencyIcon type="primary" />
-                </div>
-                <span
-                    className={`text text_type_main-default ${styles.burgerCardTitle}`}
-                >
+                        <CurrencyIcon type="primary"/>
+                    </div>
+                    <span
+                        className={`text text_type_main-default ${styles.burgerCardTitle}`}
+                    >
           {item.name}
         </span>
-            </div>
-        </ol>
+                </div>
+        </Link>
     )
 }
 

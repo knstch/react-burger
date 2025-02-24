@@ -7,12 +7,12 @@ const orderButtons: MenuItemProps[] = [
     {
         icon: BurgerIcon,
         text: "Конструктор",
-        link: ""
+        link: "/"
     },
     {
         icon: ListIcon,
         text: "Лента заказов",
-        link: ""
+        link: "/"
     },
 ]
 
@@ -26,7 +26,7 @@ const AppHeader = () => {
                     ))}
                 </div>
                 <Logo className={styles.logo}/>
-                <MenuItem icon={ProfileIcon} text={"Личный кабинет"} link={""}/>
+                <MenuItem icon={ProfileIcon} text={"Личный кабинет"} link={"/profile"}/>
             </div>
         </header>
     )
