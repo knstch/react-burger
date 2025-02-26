@@ -9,10 +9,10 @@ import {forgotPassword} from "./authStates";
 import {authStateSlice} from "../../../services/reducers/auth";
 
 const ResetPassword = () => {
-    const [token, setToken] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
+    const [token, setToken] = useState("");
+    const [password, setPassword] = useState("");
 
-    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState("");
 
     const [showPassword, setShowPassword] = useState(false);
 

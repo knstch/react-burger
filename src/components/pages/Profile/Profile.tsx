@@ -5,8 +5,9 @@ import {getAuthCookie} from "../../../common/getAuthCookie";
 import {refreshToken} from "../../../common/refreshToken";
 import styles from "./Profile.module.css"
 import {useNavigate, useParams} from "react-router-dom";
-import {useSelector} from "react-redux";
-import {RootState} from "../../../services/store";
+import {useDispatch} from "react-redux";
+import Cookies from "js-cookie";
+import {authStateSlice} from "../../../services/reducers/auth";
 
 interface UserResponse {
     success: boolean;
@@ -24,35 +25,40 @@ interface UserUpdatePayload {
     password?: string;
 }
 
-const Profile = () => {
+interface ProfileProps {
+    isAuthorized: boolean;
+}
+
+const Profile: React.FC<ProfileProps> = (props) => {
     const navigate = useNavigate();
     const { activeTabParam } = useParams()
 
-    const isAuthorized = useSelector((state: RootState) => state.authReducer.IsAuthorized);
+    const dispatch = useDispatch();
+    const {actions} = authStateSlice
 
-    const [isProfileEdited, setIsProfileEdited] = useState<boolean>(false)
-    const [name, setName] = useState<string>("");
-    const [isNameFieldDisabled, setIsNameFieldDisabled] = useState<boolean>(true);
+    const [isProfileEdited, setIsProfileEdited] = useState(false)
+    const [name, setName] = useState("");
+    const [isNameFieldDisabled, setIsNameFieldDisabled] = useState(true);
     const toggleEditName = () => {
         setIsNameFieldDisabled(!isNameFieldDisabled);
         setIsProfileEdited(true);
     }
 
-    const [login, setLogin] = useState<string>("");
-    const [isLoginFieldDisabled, setIsLoginFieldDisabled] = useState<boolean>(true);
+    const [login, setLogin] = useState("");
+    const [isLoginFieldDisabled, setIsLoginFieldDisabled] = useState(true);
     const toggleEditLogin = () => {
         setIsLoginFieldDisabled(!isLoginFieldDisabled);
         setIsProfileEdited(true);
     }
 
-    const [password, setPassword] = useState<string>("");
-    const [isPasswordFieldDisabled, setIsPasswordFieldDisabled] = useState<boolean>(true);
+    const [password, setPassword] = useState("");
+    const [isPasswordFieldDisabled, setIsPasswordFieldDisabled] = useState(true);
     const toggleEditPassword = () => {
         setIsPasswordFieldDisabled(!isPasswordFieldDisabled);
         setIsProfileEdited(true);
     }
 
-    const [activeTab, setActiveTab] = useState<string>("Профиль")
+    const [activeTab, setActiveTab] = useState("Профиль")
     useEffect(() => {
         if (activeTabParam === "orders") {
             setActiveTab("История заказов")
@@ -125,12 +131,22 @@ const Profile = () => {
     }
 
     useEffect(() => {
-        if (!isAuthorized) {
-            navigate("/login");
+        if (!props.isAuthorized) {
+            navigate("/login", {state: {
+                url: "profile"
+                }
+            });
         }
 
         fetchUserData()
-    }, [fetchUserData, isAuthorized, navigate])
+    }, [fetchUserData, navigate, props.isAuthorized])
+
+    const logout = () => {
+        localStorage.removeItem('refreshToken');
+        Cookies.remove('accessToken', { path: '/' });
+
+        dispatch(actions.logOut(""))
+    }
 
     return (
         <section className={`${styles.profile} mt-30`}>
@@ -150,7 +166,7 @@ const Profile = () => {
                       }}>
                     История заказов
                 </span>
-                <span className={`${styles.tabText} text text_type_main-large ${activeTab === "Выход" ? styles.activeTabText : ""}`} onClick={() => setActiveTab("Выход")}>
+                <span className={`${styles.tabText} text text_type_main-large ${activeTab === "Выход" ? styles.activeTabText : ""}`} onClick={logout}>
                     Выход
                 </span>
                 <span className={`text text_type_main-default ${styles.tabGroupComment} mt-20`}>В этом разделе вы можете изменить свои персональные данные</span>

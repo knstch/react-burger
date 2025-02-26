@@ -5,24 +5,25 @@ import React, {useEffect, useState} from "react";
 import axios, {AxiosResponse} from "axios";
 import {AuthResponse} from "./ApiResponse";
 import {SetAuthCookie} from "./Cookie";
-import {useSelector} from "react-redux";
-import {RootState} from "../../../services/store";
 
-const Register = () => {
-    const [errorMessage, setErrorMessage] = useState<string>();
+interface RegisterProps {
+    isAuthorized: boolean;
+}
 
-    const [name, setName] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [email, setEmail] = useState<string>("");
+const Register: React.FC<RegisterProps> = (props) => {
+    const [errorMessage, setErrorMessage] = useState("");
+
+    const [name, setName] = useState("");
+    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("");
 
     const navigate = useNavigate();
 
-    const isAuthorized = useSelector((state: RootState) => state.authReducer.IsAuthorized);
     useEffect(() => {
-        if (!isAuthorized) {
+        if (!props.isAuthorized) {
             navigate("/");
         }
-    }, [isAuthorized, navigate]);
+    }, [props.isAuthorized, navigate]);
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -37,7 +38,7 @@ const Register = () => {
             password,
             name,
         }).then((response: AxiosResponse<AuthResponse>) => {
-            SetAuthCookie(() => setErrorMessage(''), response.data.refreshToken, response.data.accessToken)
+            SetAuthCookie(() => setErrorMessage(""), response.data.refreshToken, response.data.accessToken)
 
             navigate("/")
         }).catch((error: AxiosResponse) => {

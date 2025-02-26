@@ -1,23 +1,27 @@
 import styles from "./Login.module.css"
 import {Button, Input} from "@ya.praktikum/react-developer-burger-ui-components";
-import {Link, useNavigate} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import axios, {AxiosResponse} from "axios";
 import {AuthResponse} from "./ApiResponse";
 import {SetAuthCookie} from "./Cookie";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {authStateSlice} from "../../../services/reducers/auth";
-import {RootState} from "../../../services/store";
 
-const Login = () => {
-    const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
+interface LoginProps {
+    isAuthorized: boolean;
+}
 
-    const [errorMessage, setErrorMessage] = useState<string>("");
+const Login: React.FC<LoginProps> = (props) => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const [errorMessage, setErrorMessage] = useState("");
 
     const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -26,12 +30,13 @@ const Login = () => {
     const dispatch = useDispatch()
     const { actions } = authStateSlice
 
-    const isAuthorized = useSelector((state: RootState) => state.authReducer.IsAuthorized);
+    const fromURL = location.state?.url
+
     useEffect(() => {
-        if (isAuthorized) {
+        if (props.isAuthorized) {
             navigate("/");
         }
-    }, [isAuthorized, navigate])
+    }, [props.isAuthorized, navigate])
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -41,7 +46,7 @@ const Login = () => {
         }).then((response: AxiosResponse<AuthResponse>) => {
             SetAuthCookie(() => setErrorMessage(''), response.data.refreshToken, response.data.accessToken)
             dispatch(actions.login(""))
-            navigate("/")
+            navigate(`/${fromURL === undefined ? '' : fromURL}`)
         }).catch((error: AxiosResponse) => {
             console.error(error);
             if (error.status === 401) {

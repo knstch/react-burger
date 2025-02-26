@@ -1,31 +1,37 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import axios, {AxiosResponse} from "axios";
 import styles from "./Login.module.css";
 import {Button, Input} from "@ya.praktikum/react-developer-burger-ui-components";
-import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "../../../services/store";
+import {useDispatch} from "react-redux";
 import {authStateSlice} from "../../../services/reducers/auth";
 import {forgotPassword} from "./authStates";
 
-const ForgotPassword = () => {
-    const [email, setEmail] = useState<string>("");
+const passwordResetURL = 'https://norma.nomoreparties.space/api/password-reset'
 
-    const [errorMessage, setErrorMessage] = useState<string>();
+interface ForgotPasswordProps {
+    isAuthorized: boolean;
+}
+
+const ForgotPassword: React.FC<ForgotPasswordProps> = (props) => {
+    const [email, setEmail] = useState("");
+
+    const [errorMessage, setErrorMessage] = useState("");
 
     const navigate = useNavigate();
 
-    const isAuthorized = useSelector((state: RootState) => state.authReducer.IsAuthorized);
-    if (isAuthorized) {
-        navigate("/");
-    }
+    useEffect(() => {
+        if (props.isAuthorized) {
+            navigate("/");
+        }
+    }, [navigate, props.isAuthorized]);
 
     const dispatch = useDispatch()
     const { actions } = authStateSlice
 
     const handlePasswordReset = async (e: React.FormEvent) => {
         e.preventDefault();
-        await axios.post('https://norma.nomoreparties.space/api/password-reset', {
+        await axios.post(passwordResetURL, {
             email,
         }).then(_ => {
                 dispatch(actions.setAuthState(forgotPassword));

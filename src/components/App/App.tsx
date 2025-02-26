@@ -37,6 +37,8 @@ const App = () => {
     const navigate = useNavigate()
     const background = location.state && location.state.background
 
+    const isAuthorized = useSelector((state: RootState) => state.authReducer.IsAuthorized)
+
     const { actions } = ingredientsSlice
 
     const handleModalClose = () => {
@@ -59,45 +61,43 @@ const App = () => {
         return <div className="mt-10">Loading...</div>;
     }
 
-
-
-  return (
-      <div className="App">
-        <AppHeader/>
-          {
-              error && (
-                  <div className={`mt-10 burgerErrorWindow`}>
-                      <ErrorGettingBurgerIngredients Error={error}/>
-                  </div>
-              )
-          }
-          {
-              !error && (
-                  <>
-                      <Routes>
-                          <Route path={'/'} element={<Main />}/>
-                          <Route path={'/login'} element={<Login />}/>
-                          <Route path={'/register'} element={<Register />}/>
-                          <Route path={'/forgot-password'} element={<ForgotPassword/>}/>
-                          <Route path={'/reset-password'} element={<ResetPassword />}/>
-                          <Route path={'/profile/:activeTabParam?'} element={<Profile/>}/>
-                          <Route path={'/ingredients/:id'} element={<IngredientDetails/>} />
-                      </Routes>
-                      {
-                          background && (
-                              <Routes>
-                                  <Route path={'/ingredients/:id'} element={
-                                      <ModalOverlay CloseFunc={handleModalClose} Title={"Детали ингредиента"}>
-                                          <BurgerIngredientModal/>
-                                      </ModalOverlay>
-                                  }/>
-                              </Routes>
-                          )
-                      }
-                  </>
-              )
-          }
-      </div>
+    return (
+        <div className="App">
+            <AppHeader/>
+            {
+                error && (
+                    <div className={`mt-10 burgerErrorWindow`}>
+                        <ErrorGettingBurgerIngredients Error={error}/>
+                    </div>
+                )
+            }
+            {
+                !error && (
+                    <>
+                        <Routes location={background || location}>
+                            <Route path={'/'} element={<Main />}/>
+                            <Route path={'/login'} element={<Login isAuthorized={isAuthorized} />}/>
+                            <Route path={'/register'} element={<Register isAuthorized={isAuthorized} />}/>
+                            <Route path={'/forgot-password'} element={<ForgotPassword isAuthorized={isAuthorized} />}/>
+                            <Route path={'/reset-password'} element={<ResetPassword />}/>
+                            <Route path={'/profile/:activeTabParam?'} element={<Profile isAuthorized={isAuthorized} />}/>
+                            <Route path={'/ingredients/:id'} element={<IngredientDetails/>} />
+                        </Routes>
+                        {
+                            background && (
+                                <Routes>
+                                    <Route path={'/ingredients/:id'} element={
+                                            <ModalOverlay CloseFunc={handleModalClose} Title={"Детали ингредиента"}>
+                                                <BurgerIngredientModal/>
+                                            </ModalOverlay>
+                                    }/>
+                                </Routes>
+                            )
+                        }
+                    </>
+                )
+            }
+        </div>
   );
 }
 
