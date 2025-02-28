@@ -29,7 +29,7 @@ const ErrorGettingBurgerIngredients: React.FC<GettingBurgerErrorProps> = (props)
         </div>
     )
 }
-
+// типизация уже реализована
 const App = () => {
     const dispatch = useDispatch()
 
