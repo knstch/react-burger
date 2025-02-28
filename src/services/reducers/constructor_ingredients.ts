@@ -39,7 +39,7 @@ export const constructorIngredientsSlice = createSlice({
                             bun: action.payload,
                         }
                     }
-                    console.log(action.payload.item)
+
                     return {
                         ...state,
                         foodItems: [...state.foodItems, action.payload],

@@ -18,6 +18,7 @@ import {apiErrorMsg} from "../../../common/common";
 import {checkoutSlice} from "../../../services/reducers/checkout";
 import {HTML5Backend} from "react-dnd-html5-backend";
 import type { Identifier, XYCoord } from 'dnd-core';
+import {useNavigate} from "react-router-dom";
 
 const burgerApiHost = `${process.env.REACT_APP_FOOD_API_HOST+"/orders"}`
 
@@ -193,6 +194,7 @@ const CheckOutBox = () => {
     const dispatch = useDispatch()
     const {actions: checkoutActions} = checkoutSlice
     const {actions: constructorActions} = constructorIngredientsSlice
+    const navigate = useNavigate()
 
     const foodItems = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems)
     const bun = useSelector((state: RootState) => state.constructorIngredientsReducer.bun)
@@ -231,6 +233,8 @@ const CheckOutBox = () => {
         return response.data
     }
 
+    const isAuthorized = useSelector((state: RootState) => state.authReducer.IsAuthorized);
+
     return (
         <div className={`mt-10 ${styles.checkOutBox}`}>
             <div className={`defaultFlexRow mr-10`}>
@@ -238,6 +242,11 @@ const CheckOutBox = () => {
                 <CurrencyIcon type="primary"/>
             </div>
             <Button htmlType="button" type="primary" size="medium" onClick={() => {
+                if (!isAuthorized) {
+                    navigate('/login')
+                    return
+                }
+
                 if (foodItems.length > 0 && bun) {
                     placeOrder().then(res => {
                         dispatch(checkoutActions.setApiResponse(res))
