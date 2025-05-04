@@ -12,7 +12,7 @@ const orderButtons: MenuItemProps[] = [
     {
         icon: ListIcon,
         text: "Лента заказов",
-        link: "/"
+        link: "/feed"
     },
 ]
 

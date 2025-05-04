@@ -12,6 +12,8 @@ const ResetPassword = () => {
     const [token, setToken] = useState("");
     const [password, setPassword] = useState("");
 
+    const [isPasswordChanged, setIsPasswordChanged] = useState(false);
+
     const [errorMessage, setErrorMessage] = useState("");
 
     const [showPassword, setShowPassword] = useState(false);
@@ -24,10 +26,17 @@ const ResetPassword = () => {
     useEffect(() => {
         if (authState.IsAuthorized) {
             navigate("/");
-        } else if (authState.RegisterState !== forgotPassword) {
+        } else if (authState.RegisterState !== forgotPassword && !isPasswordChanged) {
             navigate("/forgot-password");
         }
-    }, [authState.IsAuthorized, authState.RegisterState, navigate])
+    }, [authState.IsAuthorized, authState.RegisterState, navigate, isPasswordChanged])
+
+    useEffect(() => {
+        if (isPasswordChanged) {
+            dispatch(actions.setAuthState(""));
+            navigate("/login");
+        }
+    }, [isPasswordChanged, dispatch, navigate, actions])
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -39,8 +48,7 @@ const ResetPassword = () => {
             token,
             password
         }).then(_ => {
-            dispatch(actions.setAuthState(""));
-            navigate("/login")
+            setIsPasswordChanged(true);
         }).catch((error: AxiosResponse) => {
             console.error(error);
             if (error.status === 404) {

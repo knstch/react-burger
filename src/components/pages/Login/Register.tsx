@@ -20,7 +20,7 @@ const Register: React.FC<RegisterProps> = (props) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!props.isAuthorized) {
+        if (props.isAuthorized) {
             navigate("/");
         }
     }, [props.isAuthorized, navigate]);

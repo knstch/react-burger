@@ -17,6 +17,7 @@ import BurgerIngredientModal from "../Main/BurgerIngredients/BurgerIngredientMod
 import {ingredientsSlice} from "../../services/reducers/ingredients";
 import {getAuthCookie} from "../../common/getAuthCookie";
 import {authStateSlice} from "../../services/reducers/auth";
+import Feed from "../Main/Feed/Feed";
 
 interface GettingBurgerErrorProps {
     Error: string;
@@ -82,6 +83,7 @@ const App = () => {
                             <Route path={'/reset-password'} element={<ResetPassword />}/>
                             <Route path={'/profile/:activeTabParam?'} element={<Profile isAuthorized={isAuthorized} />}/>
                             <Route path={'/ingredients/:id'} element={<IngredientDetails/>} />
+                            <Route path={'/feed'} element={<Feed/>}/>
                         </Routes>
                         {
                             background && (

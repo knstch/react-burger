@@ -1,4 +1,4 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 interface checkoutData {
     orderNumber: number,
@@ -10,11 +10,21 @@ const initialState: checkoutData = {
     name: ""
 }
 
+interface Order {
+    number: number
+}
+
+interface PlaceOrderApiResponse {
+    name: string,
+    order: Order,
+    success: boolean
+}
+
 export const checkoutSlice = createSlice({
     name: "checkout",
     initialState: initialState,
     reducers: {
-        setApiResponse: (state, action)=> {
+        setApiResponse: (state, action: PayloadAction<PlaceOrderApiResponse>)=> {
             return {
                 ...state,
                 orderNumber: action.payload.order.number,

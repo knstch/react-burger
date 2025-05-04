@@ -22,7 +22,7 @@ export const ingredientsSlice = createSlice({
     name: 'ingredients',
     initialState,
     reducers: {
-        setOpenedCard: (state, action) => {
+        setOpenedCard: (state, action: PayloadAction<string>) => {
             state.activeOpenedCardId = action.payload
         },
         removeOpenedCard: (state, _) => {
