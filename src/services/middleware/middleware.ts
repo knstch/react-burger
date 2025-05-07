@@ -2,6 +2,9 @@ import {Action, Middleware, MiddlewareAPI} from "redux";
 import {RootState} from "../store";
 import {ThunkDispatch} from "redux-thunk";
 import {ordersSlice} from "../reducers/orders";
+import {FeedResponse} from "../reducers/orders"
+import {refreshToken} from "../../common/refreshToken";
+import {getAccessToken} from "../../common/getAuthCookie";
 
 export type AppDispatch = ThunkDispatch<RootState, any, Action>
 
@@ -13,26 +16,41 @@ export const socketMiddleware = (wsUrl: string): Middleware => {
         return next => (action: any) => {
             const { dispatch } = store;
 
-            socket = new WebSocket(wsUrl);
-
-            if (action.type === 'WS_CONNECTION_START' && !socket) {
-                socket = new WebSocket(wsUrl);
-
-                socket.onopen = event => {
-                    dispatch(actions.wsConnectionSuccess(event));
+            if (action.type === actions.wsConnectionStart.type) {
+                socket = new WebSocket(`${wsUrl}/all`);
+                socket.onopen = _ => {
+                    dispatch(actions.wsConnectionSuccess());
                 };
+            }
 
+            if (action.type === actions.wsSecureConnectionStart.type) {
+                socket = new WebSocket(`${wsUrl}?token=${action.payload}`);
+                socket.onopen = _ => {
+                    dispatch(actions.wsConnectionSuccess());
+                };
+            }
+
+            if (socket) {
                 socket.onerror = event => {
                     dispatch(actions.wsConnectionError(event));
                 };
 
                 socket.onmessage = event => {
-                    const { data } = event;
-                    dispatch(actions.wsGetMessage(data));
+                    const feed: FeedResponse = JSON.parse(event.data);
+                    if (feed.message === 'Invalid or missing token') {
+                        refreshToken().then(_ => {
+                            const accessToken = getAccessToken()
+                            socket = new WebSocket(`${wsUrl}?token=${accessToken}`);
+                            socket.onopen = _ => {
+                                dispatch(actions.wsConnectionSuccess());
+                            };
+                        })
+                    }
+                    dispatch(actions.wsGetMessage(feed));
                 };
 
-                socket.onclose = event => {
-                    dispatch(actions.wsConnectionClosed(event));
+                socket.onclose = _ => {
+                    dispatch(actions.wsConnectionClosed());
                     socket = null;
                 };
             }

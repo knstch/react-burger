@@ -22,7 +22,7 @@ const BurgerIngredients = () => {
     }, [bunInView, sauceInView, fillingInView])
 
     return (
-        <section className={`mt-10 ${styles.ingredientsSectionContainer} p-4`}>
+        <section className={`${styles.ingredientsSectionContainer} p-4`}>
             <div className={styles.modalTitleWrapper}>
                 <h1 className={`text text_type_main-large ${styles.modalTitle}`}>Собери бургер</h1>
             </div>

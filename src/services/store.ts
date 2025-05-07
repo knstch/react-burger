@@ -7,8 +7,7 @@ export const store = configureStore({
     reducer: rootReducer,
     devTools: process.env.NODE_ENV !== 'production',
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk,
-        socketMiddleware('wss://norma.nomoreparties.space/orders/all'),
-        socketMiddleware('wss://norma.nomoreparties.space/orders')),
+        socketMiddleware('wss://norma.nomoreparties.space/orders'))
 })
 
 export type RootState = ReturnType<typeof store.getState>

@@ -5,16 +5,11 @@ import styles from './Feed.module.css'
 import {CurrencyIcon} from "@ya.praktikum/react-developer-burger-ui-components";
 import {createSelector} from "reselect";
 import {ordersSlice} from "../../../services/reducers/orders";
+import {Link, useLocation} from "react-router-dom";
+import {formatDate, getStatus} from "../../../common/common";
+import {getAccessToken} from "../../../common/getAuthCookie";
 
-const ordersApiHost = "wss://norma.nomoreparties.space/orders/all"
 const iconsOverlap = 15
-
-interface FeedResponse {
-    success: boolean;
-    orders: Order[];
-    total: number;
-    totalToday: number;
-}
 
 interface Order {
     _id: string;
@@ -24,6 +19,7 @@ interface Order {
     createdAt: string;
     updatedAt: string;
     number: number;
+    isPersonnel?: boolean;
 }
 
 const selectIngredients = (state: RootState) =>
@@ -41,70 +37,88 @@ const memoizedIngredientsSelector = createSelector(
     }
 );
 
-const Feed = () => {
-    const [feedData, setFeedData] = useState<FeedResponse | null>(null);
+interface FeedProps {
+    isPersonnelFeed?: boolean;
+}
+
+const Feed: React.FC<FeedProps> = ({isPersonnelFeed}) => {
     const {actions} = ordersSlice
     const dispatch = useDispatch();
-    dispatch(actions.wsConnectionStart(""))
+    const hasConnected = useRef(false);
+    const [error, setError] = useState('');
 
     useEffect(() => {
-        const ws = new WebSocket(ordersApiHost);
-
-        ws.onmessage = (event: MessageEvent) => {
-            try {
-                const data: FeedResponse = JSON.parse(event.data);
-                setFeedData(data);
-            } catch (error) {
-                console.error('Error parsing JSON:', error);
+        if (!hasConnected.current) {
+            if (isPersonnelFeed) {
+                const accessToken = getAccessToken()
+                if (accessToken) {
+                    dispatch(actions.wsSecureConnectionStart(accessToken))
+                    return
+                }
+                setError('Необходимо залогиниться')
+                return
             }
-        };
+            dispatch(actions.wsConnectionStart());
+            hasConnected.current = true;
+        }
 
         return () => {
-            ws.close();
-        };
-    }, []);
-    console.log(feedData)
-    const readyOrders = feedData?.orders.filter((order) => {
+            dispatch(actions.wsConnectionClosed());
+        }
+    }, [dispatch]);
+
+    const orders = useSelector((state: RootState) => state.ordersReducer)
+
+    if (error) {
+        return (
+            <div>{error}</div>
+        )
+    }
+
+    const readyOrders = orders.FeedResponse?.orders.filter((order) => {
         return order.status === "done"
     })
     const readyOrderNumbers = readyOrders?.map((order) => order.number)
 
-    const inProgressOrders = feedData?.orders.filter((order) => {
+    const inProgressOrders = orders.FeedResponse?.orders.filter((order) => {
         return order.status !== "done"
     })
     const inProgressOrderNumbers = inProgressOrders?.map((order) => order.number)
     return (
-        <section className={`${styles.feed} mt-10`}>
-            <div>
-                {feedData === null ? (
+        <section className={`${styles.feed} ${isPersonnelFeed ? styles.feedPersonnel : ''}`}>
+            <div className={styles.feedPersonnel}>
+                {orders.FeedResponse === null ? (
                     <div>Loading...</div>
                 ) : (
-                    <div className={styles.feedWrapper}>
-                        <h1 className={`text text_type_main-large ${styles.feedTitle}`}>Лента заказов</h1>
-                        <div className={styles.feedContainer}>
-                            <div className={styles.ordersList}>
-                                <div className={styles.ordersContainer}>
+                    <div className={`${styles.feedWrapper}`}>
+                        {!isPersonnelFeed && <h1 className={`text text_type_main-large ${styles.feedTitle}`}>Лента заказов</h1>}
+                        <div className={`${styles.feedContainer}`}>
+                            <div className={`${styles.ordersList} ${isPersonnelFeed ? styles.ordersListShorten : ''}`}>
+                                <div className={`${styles.ordersContainer} ${isPersonnelFeed ? styles.ordersContainerPersonnel : ''}`}>
                                     {
-                                        feedData.orders.map((order) => (
-                                            <UserOrder
-                                                key={order._id}
-                                                _id={order._id}
-                                                status={order.status}
-                                                number={order.number}
-                                                ingredients={order.ingredients}
-                                                name={order.name}
-                                                createdAt={order.createdAt}
-                                                updatedAt={order.updatedAt}
-                                            />
+                                        orders.FeedResponse.orders.map((order) => (
+                                                <UserOrder
+                                                    key={order._id}
+                                                    _id={order._id}
+                                                    status={order.status}
+                                                    number={order.number}
+                                                    ingredients={order.ingredients}
+                                                    name={order.name}
+                                                    createdAt={order.createdAt}
+                                                    updatedAt={order.updatedAt}
+                                                    isPersonnel={isPersonnelFeed}
+                                                />
                                         ))
                                     }
                                 </div>
                             </div>
-                            <OrderStatuses readyOrderNumbers={readyOrderNumbers}
-                                           inProcessOrderNumbers={inProgressOrderNumbers}
-                                           total={feedData.total}
-                                           totalToday={feedData.totalToday}
-                            />
+                            {
+                                !isPersonnelFeed && (<OrderStatuses readyOrderNumbers={readyOrderNumbers}
+                                                                    inProcessOrderNumbers={inProgressOrderNumbers}
+                                                                    total={orders.FeedResponse.total}
+                                                                    totalToday={orders.FeedResponse.totalToday}
+                                />)
+                            }
                         </div>
                     </div>
                 )}
@@ -115,6 +129,8 @@ const Feed = () => {
 
 
 const UserOrder: React.FC<Order> = (props) => {
+    const location = useLocation();
+
     const ingredients = useSelector((state: RootState) =>
         memoizedIngredientsSelector(state, props.ingredients)
     )
@@ -138,45 +154,34 @@ const UserOrder: React.FC<Order> = (props) => {
     }, [ingredients])
 
     return (
-        <div className={`p-6 ${styles.order}`}>
-            <div className={styles.orderTitle}>
-                <span className={`text text_type_digits-default`}>#{props.number}</span>
-                <span className={`text text_type_main-default text_color_inactive`}>{formatDate(props.createdAt)}</span>
-            </div>
-            <span className={`text text_type_main-medium`}>{props.name}</span>
-            <div className={styles.ingredientsContainer}>
-                <div className={styles.ingredientIconsContainer} ref={containerRef}>
-                    {
-                        ingredients.map((ingredient, idx) => (
-                            <div className={styles.ingredientIcon} key={idx}>
-                                <img src={ingredient.image} alt={`ingredient-${ingredient}`}
-                                     className={styles.ingredientIconImg}/>
-                            </div>
-                        ))
-                    }
+        <Link to={`/${props.isPersonnel ? 'profile/orders' : 'feed'}/${props.number}`} state={{background: location}} className={`pointer ${styles.feedLink}`}>
+            <div className={`p-6 ${styles.order} ${props.isPersonnel ? styles.orderPersonnel : ''}`}>
+                <div className={styles.orderTitle}>
+                    <span className={`text text_type_digits-default`}>#{props.number}</span>
+                    <span className={`text text_type_main-default text_color_inactive`}>{formatDate(props.createdAt)}</span>
                 </div>
-                <div className={`${styles.cost} ml-6`}>
-                    <CurrencyIcon type="primary"/>
-                    <span className={`text text_type_digits-default`}>{totalCost}</span>
+                <span className={`text text_type_main-medium mt-6`}>{props.name}</span>
+                {props.isPersonnel && <span
+                    className={`${props.status === 'done' ? 'orderSuccessStatusColor' : ''} mt-2`}>{getStatus(props.status)}</span>}
+                <div className={`${styles.ingredientsContainer} mt-6`}>
+                    <div className={styles.ingredientIconsContainer} ref={containerRef}>
+                        {
+                            ingredients.map((ingredient, idx) => (
+                                <div className={styles.ingredientIcon} key={idx}>
+                                    <img src={ingredient.image} alt={`ingredient-${ingredient}`}
+                                        className={styles.ingredientIconImg}/>
+                                </div>
+                            ))
+                        }
+                    </div>
+                    <div className={`${styles.cost} ml-6`}>
+                        <CurrencyIcon type="primary"/>
+                        <span className={`text text_type_digits-default`}>{totalCost}</span>
+                    </div>
                 </div>
             </div>
-        </div>
+        </Link>
     )
-}
-
-function formatDate(dateString: string): string {
-    const date = new Date(dateString);
-
-    const options: Intl.DateTimeFormatOptions = {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-    };
-
-    const time = date.toLocaleTimeString('ru-RU', options);
-    const today = 'Сегодня,';
-
-    return `${today} ${time}`;
 }
 
 

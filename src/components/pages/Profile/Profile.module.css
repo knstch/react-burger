@@ -30,10 +30,11 @@
 .profile {
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
+    align-items: center;
     justify-content: flex-start;
     gap: 60px;
     width: 70%;
+    height: 80vh;
 }
 
 .editProfile {

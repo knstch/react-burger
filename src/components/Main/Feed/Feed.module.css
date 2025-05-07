@@ -4,10 +4,14 @@
     align-items: flex-start;
     justify-content: center;
     width: 584px;
-    gap: 24px;
     background-color: rgba(28, 28, 33, 1);
     border-radius: 40px;
     box-sizing: border-box;
+    cursor: pointer;
+}
+
+.orderPersonnel {
+    width: 100%;
 }
 
 .orderTitle {
@@ -70,12 +74,23 @@
     align-items: flex-start;
 }
 
+.ordersContainerPersonnel {
+    height: 80vh;
+    width: 100%;
+    overflow-x: hidden;
+}
+
 .feed {
     display: flex;
     width: 80%;
     flex-direction: column;
     gap: 20px;
     align-items: center;
+}
+
+.feedPersonnel {
+    width: 100%;
+    height: 100%;
 }
 
 .feedContainer {
@@ -117,6 +132,10 @@
     gap: 20px;
 }
 
+.ordersListShorten {
+    width: 100%;
+}
+
 .feedWrapper {
     display: flex;
     flex-direction: column;
@@ -125,5 +144,9 @@
 }
 
 .feedTitle {
+    width: 100%;
+}
+
+.feedLink {
     width: 100%;
 }

@@ -18,6 +18,7 @@ import {ingredientsSlice} from "../../services/reducers/ingredients";
 import {getAuthCookie} from "../../common/getAuthCookie";
 import {authStateSlice} from "../../services/reducers/auth";
 import Feed from "../Main/Feed/Feed";
+import FeedPiece from "../Main/Feed/FeedPiece";
 
 interface GettingBurgerErrorProps {
     Error: string;
@@ -30,7 +31,7 @@ const ErrorGettingBurgerIngredients: React.FC<GettingBurgerErrorProps> = (props)
         </div>
     )
 }
-// типизация уже реализована
+
 const App = () => {
     const dispatch = useDispatch()
 
@@ -84,6 +85,8 @@ const App = () => {
                             <Route path={'/profile/:activeTabParam?'} element={<Profile isAuthorized={isAuthorized} />}/>
                             <Route path={'/ingredients/:id'} element={<IngredientDetails/>} />
                             <Route path={'/feed'} element={<Feed/>}/>
+                            <Route path={'/feed/:number'} element={<FeedPiece/>}/>
+                            <Route path={'/profile/orders/:number'} element={<FeedPiece isAuthorized={isAuthorized}/>}/>
                         </Routes>
                         {
                             background && (
@@ -92,6 +95,16 @@ const App = () => {
                                             <ModalOverlay CloseFunc={handleModalClose} Title={"Детали ингредиента"}>
                                                 <BurgerIngredientModal/>
                                             </ModalOverlay>
+                                    }/>
+                                    <Route path={'/feed/:number'} element={
+                                        <ModalOverlay CloseFunc={handleModalClose} Title={"Заказ"}>
+                                            <FeedPiece/>
+                                        </ModalOverlay>
+                                    }/>
+                                    <Route path={'/profile/orders/:number'} element={
+                                        <ModalOverlay CloseFunc={handleModalClose} Title={"Заказ"}>
+                                            <FeedPiece isAuthorized={isAuthorized}/>
+                                        </ModalOverlay>
                                     }/>
                                 </Routes>
                             )

@@ -15,7 +15,7 @@ const Ingredient = () => {
         <section className={styles.ingredientSection}>
             {
                 ingredient ? (
-                    <div className={`${styles.ingredientContainer} mt-30`}>
+                    <div className={`${styles.ingredientContainer} mt-10`}>
                         <span className={`text text_type_main-large`}>Детали ингредиента</span>
                         <img src={ingredient.image_large} alt={ingredient.name} className={`mb-4`}/>
                         <span className={`text_type_main-medium`}>{ingredient.name}</span>
