@@ -1,4 +1,4 @@
-import {Action, Middleware, MiddlewareAPI} from "redux";
+import {Action, Middleware, MiddlewareAPI, UnknownAction} from "redux";
 import {RootState} from "../store";
 import {ThunkDispatch} from "redux-thunk";
 import {ordersSlice} from "../reducers/orders";
@@ -13,7 +13,7 @@ export const socketMiddleware = (wsUrl: string): Middleware => {
         let socket: WebSocket | null = null;
         const {actions} = ordersSlice
 
-        return next => (action: any) => {
+        return next => (action: UnknownAction) => {
             const { dispatch } = store;
 
             if (action.type === actions.wsConnectionStart.type) {
