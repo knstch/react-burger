@@ -1,11 +1,11 @@
 import React, {useEffect, useRef, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
 import styles from './Feed.module.css'
 import {ordersSlice} from "../../../services/reducers/orders";
 import {getAccessToken} from "../../../common/getAuthCookie";
 import OrderStatuses from "./FeedOrderStatuses";
 import UserOrder from "./FeedOrders";
+import {useAppDispatch, useAppSelector} from "../../../services/hocs";
 
 interface FeedProps {
     isPersonnelFeed?: boolean;
@@ -13,22 +13,22 @@ interface FeedProps {
 
 const Feed: React.FC<FeedProps> = ({isPersonnelFeed}) => {
     const {actions} = ordersSlice
-    const dispatch = useDispatch();
     const hasConnected = useRef(false);
     const [error, setError] = useState('');
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         if (!hasConnected.current) {
             if (isPersonnelFeed) {
                 const accessToken = getAccessToken()
                 if (accessToken) {
-                    dispatch(actions.wsSecureConnectionStart(accessToken))
+                    dispatch(actions.wsConnectionStart(`?token=${accessToken}`))
                     return
                 }
                 setError('Необходимо залогиниться')
                 return
             }
-            dispatch(actions.wsConnectionStart());
+            dispatch(actions.wsConnectionStart('/all'));
             hasConnected.current = true;
         }
 
@@ -37,7 +37,7 @@ const Feed: React.FC<FeedProps> = ({isPersonnelFeed}) => {
         }
     }, [dispatch]);
 
-    const orders = useSelector((state: RootState) => state.ordersReducer)
+    const orders = useAppSelector((state: RootState) => state.ordersReducer)
 
     if (error) {
         return (

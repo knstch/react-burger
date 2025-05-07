@@ -17,14 +17,7 @@ export const socketMiddleware = (wsUrl: string): Middleware => {
             const { dispatch } = store;
 
             if (action.type === actions.wsConnectionStart.type) {
-                socket = new WebSocket(`${wsUrl}/all`);
-                socket.onopen = _ => {
-                    dispatch(actions.wsConnectionSuccess());
-                };
-            }
-
-            if (action.type === actions.wsSecureConnectionStart.type) {
-                socket = new WebSocket(`${wsUrl}?token=${action.payload}`);
+                socket = new WebSocket(`${wsUrl}${action.payload}`);
                 socket.onopen = _ => {
                     dispatch(actions.wsConnectionSuccess());
                 };

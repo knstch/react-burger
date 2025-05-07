@@ -19,6 +19,9 @@ import {checkoutSlice} from "../../../services/reducers/checkout";
 import {HTML5Backend} from "react-dnd-html5-backend";
 import type { Identifier, XYCoord } from 'dnd-core';
 import {useNavigate} from "react-router-dom";
+import {useAppDispatch, useAppSelector} from "../../../services/hocs";
+import {getAuthCookie} from "../../../common/getAuthCookie";
+import {refreshToken} from "../../../common/refreshToken";
 
 const burgerApiHost = `${process.env.REACT_APP_FOOD_API_HOST+"/orders"}`
 
@@ -191,13 +194,13 @@ const CartItem: React.FC<CartItemProps> = ({id, index}) => {
 }
 
 const CheckOutBox = () => {
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
     const {actions: checkoutActions} = checkoutSlice
     const {actions: constructorActions} = constructorIngredientsSlice
     const navigate = useNavigate()
 
-    const foodItems = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems)
-    const bun = useSelector((state: RootState) => state.constructorIngredientsReducer.bun)
+    const foodItems = useAppSelector((state: RootState) => state.constructorIngredientsReducer.foodItems)
+    const bun = useAppSelector((state: RootState) => state.constructorIngredientsReducer.bun)
 
     const [modalVisibility, setModalVisibility] = React.useState(false)
 
@@ -219,11 +222,22 @@ const CheckOutBox = () => {
         return ids
     }
 
-    const totalCost = useSelector((state: RootState) => state.constructorIngredientsReducer.totalCost)
+    const totalCost = useAppSelector((state: RootState) => state.constructorIngredientsReducer.totalCost)
 
     const placeOrder = async () => {
+        let cookie = getAuthCookie()
+        if (!cookie) {
+            refreshToken().then(_ => {
+                cookie = getAuthCookie()
+            })
+        }
+
         const response = await axios.post(burgerApiHost, {
             "ingredients": extractIds(),
+        }, {
+            headers: {
+                Authorization: cookie
+            }
         })
 
         if (!response.data.success || response.status !== 200) {
@@ -233,7 +247,7 @@ const CheckOutBox = () => {
         return response.data
     }
 
-    const isAuthorized = useSelector((state: RootState) => state.authReducer.IsAuthorized);
+    const isAuthorized = useAppSelector((state: RootState) => state.authReducer.IsAuthorized);
 
     return (
         <div className={`mt-10 ${styles.checkOutBox}`}>

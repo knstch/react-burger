@@ -36,16 +36,7 @@ export const ordersSlice = createSlice({
     name: 'orders',
     initialState,
     reducers: {
-        wsConnectionStart: (state, _: PayloadAction) => {
-            state.FeedResponse = {
-                orders: [],
-                total: 0,
-                totalToday: 0,
-                message: "",
-            };
-            state.WsConnState = 'connecting';
-        },
-        wsSecureConnectionStart: (state, _: PayloadAction<string>) => {
+        wsConnectionStart: (state, _: PayloadAction<string>) => {
             state.FeedResponse = {
                 orders: [],
                 total: 0,
