@@ -3,9 +3,9 @@ import {Link, useNavigate} from "react-router-dom";
 import axios, {AxiosResponse} from "axios";
 import styles from "./Login.module.css";
 import {Button, Input} from "@ya.praktikum/react-developer-burger-ui-components";
-import {useDispatch} from "react-redux";
 import {authStateSlice} from "../../../services/reducers/auth";
 import {forgotPassword} from "./authStates";
+import {useAppDispatch} from "../../../services/hocs";
 
 const passwordResetURL = 'https://norma.nomoreparties.space/api/password-reset'
 
@@ -26,7 +26,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = (props) => {
         }
     }, [navigate, props.isAuthorized]);
 
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
     const { actions } = authStateSlice
 
     const handlePasswordReset = async (e: React.FormEvent) => {

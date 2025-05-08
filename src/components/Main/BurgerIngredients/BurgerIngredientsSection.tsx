@@ -2,8 +2,8 @@ import React from "react";
 import styles from "./BurgerIngredients.module.css";
 import IngredientCard from './BurgerIngredientCard'
 import {FoodItem, ingredientSectionData} from "../ApiContracts/Contracts";
-import {useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
+import {useAppSelector} from "../../../services/hocs";
 
 const ingredientsTitleToEnum = new Map<string, string>()
 ingredientsTitleToEnum.set("Булки", "bun")
@@ -11,7 +11,7 @@ ingredientsTitleToEnum.set("Начинки", "main")
 ingredientsTitleToEnum.set("Соусы", "sauce")
 
 const IngredientsSection: React.FC<ingredientSectionData> = (props) => {
-    const { data } = useSelector((state: RootState) => state.ingredientsReducer.ingredientsList)
+    const { data } = useAppSelector((state: RootState) => state.ingredientsReducer.ingredientsList)
     const filteredIngredients = data.filter(ingredient => ingredient.type === ingredientsTitleToEnum.get(props.title))
 
     return (

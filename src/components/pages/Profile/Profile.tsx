@@ -5,10 +5,10 @@ import {getAuthCookie} from "../../../common/getAuthCookie";
 import {refreshToken} from "../../../common/refreshToken";
 import styles from "./Profile.module.css"
 import {useNavigate, useParams} from "react-router-dom";
-import {useDispatch} from "react-redux";
 import Cookies from "js-cookie";
 import {authStateSlice} from "../../../services/reducers/auth";
 import Feed from "../../Main/Feed/Feed";
+import {useAppDispatch} from "../../../services/hocs";
 
 interface UserResponse {
     success: boolean;
@@ -34,7 +34,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
     const navigate = useNavigate();
     const { activeTabParam } = useParams()
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const {actions} = authStateSlice
 
     const [isProfileEdited, setIsProfileEdited] = useState(false)

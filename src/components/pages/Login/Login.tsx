@@ -5,8 +5,8 @@ import React, {useEffect, useState} from "react";
 import axios, {AxiosResponse} from "axios";
 import {AuthResponse} from "./ApiResponse";
 import {SetAuthCookie} from "./Cookie";
-import {useDispatch} from "react-redux";
 import {authStateSlice} from "../../../services/reducers/auth";
+import {useAppDispatch} from "../../../services/hocs";
 
 interface LoginProps {
     isAuthorized: boolean;
@@ -27,7 +27,7 @@ const Login: React.FC<LoginProps> = (props) => {
         setShowPassword(!showPassword);
     };
 
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
     const { actions } = authStateSlice
 
     const fromURL = location.state?.url

@@ -1,13 +1,13 @@
 import {useParams} from "react-router-dom";
-import {useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
 import styles from "./Ingredient.module.css";
 import React from "react";
+import {useAppSelector} from "../../../services/hocs";
 
 const Ingredient = () => {
     const { id } = useParams()
 
-    const ingredient = useSelector((state: RootState) => {
+    const ingredient = useAppSelector((state: RootState) => {
         return state.ingredientsReducer.ingredientsList.data.find(ingredient => ingredient._id === id)
     })
 

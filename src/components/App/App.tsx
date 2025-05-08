@@ -2,7 +2,6 @@ import React, {useEffect} from 'react';
 import './App.css';
 import AppHeader from '../AppHeader/AppHeader'
 import Main from "../Main/Main";
-import {useDispatch, useSelector} from "react-redux";
 import fetchIngredients from "../../services/actions/getIngredients";
 import {RootState} from "../../services/store";
 import {Routes, Route, useLocation, useNavigate} from 'react-router-dom';
@@ -19,6 +18,7 @@ import {getAuthCookie} from "../../common/getAuthCookie";
 import {authStateSlice} from "../../services/reducers/auth";
 import Feed from "../Main/Feed/Feed";
 import FeedPiece from "../Main/Feed/FeedPiece";
+import {useAppDispatch, useAppSelector} from "../../services/hocs";
 
 interface GettingBurgerErrorProps {
     Error: string;
@@ -33,13 +33,13 @@ const ErrorGettingBurgerIngredients: React.FC<GettingBurgerErrorProps> = (props)
 }
 
 const App = () => {
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
 
     const location = useLocation()
     const navigate = useNavigate()
     const background = location.state && location.state.background
 
-    const isAuthorized = useSelector((state: RootState) => state.authReducer.IsAuthorized)
+    const isAuthorized = useAppSelector((state: RootState) => state.authReducer.IsAuthorized)
 
     const { actions } = ingredientsSlice
 
@@ -57,7 +57,7 @@ const App = () => {
         }
     }, [dispatch]);
 
-    const { loading, error } = useSelector((state: RootState) => state.ingredientsReducer.ingredientsList)
+    const { loading, error } = useAppSelector((state: RootState) => state.ingredientsReducer.ingredientsList)
 
     if (loading) {
         return <div className="mt-10">Loading...</div>;

@@ -8,7 +8,6 @@ import React from "react";
 import styles from './BurgerContractor.module.css';
 import ModalOverlay from "../Modal/ModalOverlay";
 import CheckoutModal from "./CheckoutModal";
-import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
 import {DndProvider, useDrag, useDrop} from "react-dnd";
 import {constructorIngredientsSlice, FoodItem} from "../../../services/reducers/constructor_ingredients";
@@ -27,7 +26,7 @@ const burgerApiHost = `${process.env.REACT_APP_FOOD_API_HOST+"/orders"}`
 
 const BurgerConstructor = () => {
     const {actions} = constructorIngredientsSlice
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
 
     const [, dropTarget] = useDrop({
         accept: DROP_TYPE_INGREDIENT,
@@ -54,8 +53,8 @@ const BurgerConstructor = () => {
 }
 
 const ConstructorContainer= () => {
-    const ingredients = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems)
-    const bun = useSelector((state: RootState) => state.constructorIngredientsReducer.bun)
+    const ingredients = useAppSelector((state: RootState) => state.constructorIngredientsReducer.foodItems)
+    const bun = useAppSelector((state: RootState) => state.constructorIngredientsReducer.bun)
 
     const constructorIngredients = ingredients.filter(ingredient => ingredient.item.type !== "bun");
 
@@ -110,11 +109,11 @@ interface DragItem {
 }
 
 const CartItem: React.FC<CartItemProps> = ({id, index}) => {
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
     const {actions} = constructorIngredientsSlice
 
-    const ingredient = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems.find(ingredient => ingredient.item._id === id))
-    const itemIdx = useSelector((state: RootState) =>
+    const ingredient = useAppSelector((state: RootState) => state.constructorIngredientsReducer.foodItems.find(ingredient => ingredient.item._id === id))
+    const itemIdx = useAppSelector((state: RootState) =>
         state.constructorIngredientsReducer.foodItems.findIndex(
             ingredient => ingredient.item._id === id
         )

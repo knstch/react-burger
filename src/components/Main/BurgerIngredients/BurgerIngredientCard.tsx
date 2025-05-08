@@ -1,13 +1,13 @@
 import React from "react";
 import styles from "./BurgerIngredients.module.css";
 import {Counter, CurrencyIcon} from "@ya.praktikum/react-developer-burger-ui-components";
-import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
 import {useDrag} from "react-dnd";
 import {DROP_TYPE_INGREDIENT} from "../../../common/dropTypes";
 import {selectItemsInConstructor} from "../../../services/selectors";
 import {Link, useLocation} from "react-router-dom";
 import {ingredientsSlice} from "../../../services/reducers/ingredients";
+import {useAppDispatch, useAppSelector} from "../../../services/hocs";
 
 interface cardProps {
     id: string,
@@ -15,20 +15,20 @@ interface cardProps {
 
 const IngredientCard: React.FC<cardProps> = (props) => {
     const location = useLocation();
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const { actions } = ingredientsSlice
 
-    const item = useSelector((state: RootState) =>
+    const item = useAppSelector((state: RootState) =>
         state.ingredientsReducer.ingredientsList.data.find(
             (ingredient) => ingredient._id === props.id
         )
     )
 
-    const idOfBunInConstructor = useSelector(
+    const idOfBunInConstructor = useAppSelector(
         (state: RootState) => state.constructorIngredientsReducer.bun?.item._id
     )
 
-    const initialCount = useSelector((state: RootState) =>
+    const initialCount = useAppSelector((state: RootState) =>
         selectItemsInConstructor(state, props.id)
     ).length
 

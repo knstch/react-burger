@@ -3,10 +3,10 @@ import {Link, useNavigate} from "react-router-dom";
 import axios, {AxiosResponse} from "axios";
 import styles from "./Login.module.css";
 import {Button, Input} from "@ya.praktikum/react-developer-burger-ui-components";
-import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
 import {forgotPassword} from "./authStates";
 import {authStateSlice} from "../../../services/reducers/auth";
+import {useAppDispatch, useAppSelector} from "../../../services/hocs";
 
 const ResetPassword = () => {
     const [token, setToken] = useState("");
@@ -19,10 +19,10 @@ const ResetPassword = () => {
     const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate();
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
     const { actions } = authStateSlice
 
-    const authState = useSelector((state: RootState) => state.authReducer);
+    const authState = useAppSelector((state: RootState) => state.authReducer);
     useEffect(() => {
         if (authState.IsAuthorized) {
             navigate("/");

@@ -1,11 +1,11 @@
 import React, {useEffect, useRef} from "react";
 import {Link, useLocation} from "react-router-dom";
-import {useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
 import styles from "./Feed.module.css";
 import {formatDate, getStatus} from "../../../common/common";
 import {CurrencyIcon} from "@ya.praktikum/react-developer-burger-ui-components";
 import {createSelector} from "reselect";
+import {useAppSelector} from "../../../services/hocs";
 
 interface Order {
     _id: string;
@@ -39,7 +39,7 @@ const memoizedIngredientsSelector = createSelector(
 const UserOrder: React.FC<Order> = (props) => {
     const location = useLocation();
 
-    const ingredients = useSelector((state: RootState) =>
+    const ingredients = useAppSelector((state: RootState) =>
         memoizedIngredientsSelector(state, props.ingredients)
     )
 

@@ -1,4 +1,3 @@
-import {useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
 import {useParams} from "react-router-dom";
 import React, {useCallback, useEffect, useMemo, useState} from "react";
@@ -6,6 +5,7 @@ import styles from "./FeedPiece.module.css"
 import {CurrencyIcon} from "@ya.praktikum/react-developer-burger-ui-components";
 import {formatDate, getStatus} from "../../../common/common";
 import axios from "axios";
+import {useAppSelector} from "../../../services/hocs";
 
 interface Ingredient {
     id: string
@@ -40,8 +40,8 @@ const FeedPiece: React.FC<FeedPieceProps> = ({isAuthorized}) => {
     const [isLoading, setIsLoading] = useState(false);
     const [fetchError, setFetchError] = useState<string | null>(null);
 
-    const orderFromStore  = useSelector((state: RootState) => state.ordersReducer.FeedResponse.orders.find((order) => String(order.number) === number));
-    const allIngredients = useSelector(
+    const orderFromStore  = useAppSelector((state: RootState) => state.ordersReducer.FeedResponse.orders.find((order) => String(order.number) === number));
+    const allIngredients = useAppSelector(
         (state: RootState) => state.ingredientsReducer.ingredientsList.data
     );
 
