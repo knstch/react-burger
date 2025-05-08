@@ -2,7 +2,6 @@ import React, {useEffect} from 'react';
 import './App.css';
 import AppHeader from '../AppHeader/AppHeader'
 import Main from "../Main/Main";
-import {useDispatch, useSelector} from "react-redux";
 import fetchIngredients from "../../services/actions/getIngredients";
 import {RootState} from "../../services/store";
 import {Routes, Route, useLocation, useNavigate} from 'react-router-dom';
@@ -17,6 +16,9 @@ import BurgerIngredientModal from "../Main/BurgerIngredients/BurgerIngredientMod
 import {ingredientsSlice} from "../../services/reducers/ingredients";
 import {getAuthCookie} from "../../common/getAuthCookie";
 import {authStateSlice} from "../../services/reducers/auth";
+import Feed from "../Main/Feed/Feed";
+import FeedPiece from "../Main/Feed/FeedPiece";
+import {useAppDispatch, useAppSelector} from "../../services/hocs";
 
 interface GettingBurgerErrorProps {
     Error: string;
@@ -29,15 +31,15 @@ const ErrorGettingBurgerIngredients: React.FC<GettingBurgerErrorProps> = (props)
         </div>
     )
 }
-// типизация уже реализована
+
 const App = () => {
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
 
     const location = useLocation()
     const navigate = useNavigate()
     const background = location.state && location.state.background
 
-    const isAuthorized = useSelector((state: RootState) => state.authReducer.IsAuthorized)
+    const isAuthorized = useAppSelector((state: RootState) => state.authReducer.IsAuthorized)
 
     const { actions } = ingredientsSlice
 
@@ -55,7 +57,7 @@ const App = () => {
         }
     }, [dispatch]);
 
-    const { loading, error } = useSelector((state: RootState) => state.ingredientsReducer.ingredientsList)
+    const { loading, error } = useAppSelector((state: RootState) => state.ingredientsReducer.ingredientsList)
 
     if (loading) {
         return <div className="mt-10">Loading...</div>;
@@ -82,6 +84,9 @@ const App = () => {
                             <Route path={'/reset-password'} element={<ResetPassword />}/>
                             <Route path={'/profile/:activeTabParam?'} element={<Profile isAuthorized={isAuthorized} />}/>
                             <Route path={'/ingredients/:id'} element={<IngredientDetails/>} />
+                            <Route path={'/feed'} element={<Feed/>}/>
+                            <Route path={'/feed/:number'} element={<FeedPiece/>}/>
+                            <Route path={'/profile/orders/:number'} element={<FeedPiece isAuthorized={isAuthorized}/>}/>
                         </Routes>
                         {
                             background && (
@@ -90,6 +95,16 @@ const App = () => {
                                             <ModalOverlay CloseFunc={handleModalClose} Title={"Детали ингредиента"}>
                                                 <BurgerIngredientModal/>
                                             </ModalOverlay>
+                                    }/>
+                                    <Route path={'/feed/:number'} element={
+                                        <ModalOverlay CloseFunc={handleModalClose} Title={"Заказ"}>
+                                            <FeedPiece/>
+                                        </ModalOverlay>
+                                    }/>
+                                    <Route path={'/profile/orders/:number'} element={
+                                        <ModalOverlay CloseFunc={handleModalClose} Title={"Заказ"}>
+                                            <FeedPiece isAuthorized={isAuthorized}/>
+                                        </ModalOverlay>
                                     }/>
                                 </Routes>
                             )

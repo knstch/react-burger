@@ -5,9 +5,10 @@ import {getAuthCookie} from "../../../common/getAuthCookie";
 import {refreshToken} from "../../../common/refreshToken";
 import styles from "./Profile.module.css"
 import {useNavigate, useParams} from "react-router-dom";
-import {useDispatch} from "react-redux";
 import Cookies from "js-cookie";
 import {authStateSlice} from "../../../services/reducers/auth";
+import Feed from "../../Main/Feed/Feed";
+import {useAppDispatch} from "../../../services/hocs";
 
 interface UserResponse {
     success: boolean;
@@ -33,7 +34,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
     const navigate = useNavigate();
     const { activeTabParam } = useParams()
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const {actions} = authStateSlice
 
     const [isProfileEdited, setIsProfileEdited] = useState(false)
@@ -149,7 +150,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
     }
 
     return (
-        <section className={`${styles.profile} mt-30`}>
+        <section className={`${styles.profile}`}>
             <div className={styles.tabGroup}>
                 <span
                     className={`${styles.tabText} text text_type_main-large ${activeTab === "Профиль" ? styles.activeTabText : ""}`}
@@ -223,6 +224,9 @@ const Profile: React.FC<ProfileProps> = (props) => {
                                 )
                             }
                         </form>)}
+            {
+                activeTab === "История заказов" && <Feed isPersonnelFeed={true}/>
+            }
         </section>
     )
 }

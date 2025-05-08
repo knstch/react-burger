@@ -12,13 +12,13 @@ const orderButtons: MenuItemProps[] = [
     {
         icon: ListIcon,
         text: "Лента заказов",
-        link: "/"
+        link: "/feed"
     },
 ]
 
 const AppHeader = () => {
     return (
-        <header>
+        <header className={`mb-10`}>
             <div className={`${styles.header} p-4`}>
                 <div className={styles.btnGroup}>
                     {orderButtons.map((item, i) => (

@@ -1,0 +1,57 @@
+.order {
+    display: flex;
+    flex-direction: column;
+    width: 640px;
+}
+
+.orderNumber {
+    align-self: center;
+}
+
+.ingredientImgWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border: 2px solid transparent;
+    background: linear-gradient(#131316, #131316) padding-box, linear-gradient(90deg, #801AB2, #4C4CFF) border-box;
+    border-radius: 50%;
+}
+
+.ingredientImg {
+    height: 56px;
+    border-radius: 1000px;
+}
+
+.ingredient {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 608px;
+}
+
+.ingredientPrice {
+    justify-self: flex-end;
+}
+
+.ingredientWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.ingredientsList {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    max-height: 304px;
+    overflow-y: auto;
+}

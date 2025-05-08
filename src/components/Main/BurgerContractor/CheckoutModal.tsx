@@ -1,10 +1,10 @@
 import doneImg from "../../../assets/done.png"
 import styles from "./BurgerContractor.module.css"
-import {useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
+import {useAppSelector} from "../../../services/hocs";
 
 const CheckoutModal = () => {
-    const checkoutApiResponse = useSelector((state: RootState) => state.checkoutReducer)
+    const checkoutApiResponse = useAppSelector((state: RootState) => state.checkoutReducer)
 
     return (
         <div className={`defaultFlexCol mb-30`}>

@@ -8,7 +8,6 @@ import React from "react";
 import styles from './BurgerContractor.module.css';
 import ModalOverlay from "../Modal/ModalOverlay";
 import CheckoutModal from "./CheckoutModal";
-import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
 import {DndProvider, useDrag, useDrop} from "react-dnd";
 import {constructorIngredientsSlice, FoodItem} from "../../../services/reducers/constructor_ingredients";
@@ -19,12 +18,15 @@ import {checkoutSlice} from "../../../services/reducers/checkout";
 import {HTML5Backend} from "react-dnd-html5-backend";
 import type { Identifier, XYCoord } from 'dnd-core';
 import {useNavigate} from "react-router-dom";
+import {useAppDispatch, useAppSelector} from "../../../services/hocs";
+import {getAuthCookie} from "../../../common/getAuthCookie";
+import {refreshToken} from "../../../common/refreshToken";
 
 const burgerApiHost = `${process.env.REACT_APP_FOOD_API_HOST+"/orders"}`
 
 const BurgerConstructor = () => {
     const {actions} = constructorIngredientsSlice
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
 
     const [, dropTarget] = useDrop({
         accept: DROP_TYPE_INGREDIENT,
@@ -51,8 +53,8 @@ const BurgerConstructor = () => {
 }
 
 const ConstructorContainer= () => {
-    const ingredients = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems)
-    const bun = useSelector((state: RootState) => state.constructorIngredientsReducer.bun)
+    const ingredients = useAppSelector((state: RootState) => state.constructorIngredientsReducer.foodItems)
+    const bun = useAppSelector((state: RootState) => state.constructorIngredientsReducer.bun)
 
     const constructorIngredients = ingredients.filter(ingredient => ingredient.item.type !== "bun");
 
@@ -107,11 +109,11 @@ interface DragItem {
 }
 
 const CartItem: React.FC<CartItemProps> = ({id, index}) => {
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
     const {actions} = constructorIngredientsSlice
 
-    const ingredient = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems.find(ingredient => ingredient.item._id === id))
-    const itemIdx = useSelector((state: RootState) =>
+    const ingredient = useAppSelector((state: RootState) => state.constructorIngredientsReducer.foodItems.find(ingredient => ingredient.item._id === id))
+    const itemIdx = useAppSelector((state: RootState) =>
         state.constructorIngredientsReducer.foodItems.findIndex(
             ingredient => ingredient.item._id === id
         )
@@ -191,13 +193,13 @@ const CartItem: React.FC<CartItemProps> = ({id, index}) => {
 }
 
 const CheckOutBox = () => {
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
     const {actions: checkoutActions} = checkoutSlice
     const {actions: constructorActions} = constructorIngredientsSlice
     const navigate = useNavigate()
 
-    const foodItems = useSelector((state: RootState) => state.constructorIngredientsReducer.foodItems)
-    const bun = useSelector((state: RootState) => state.constructorIngredientsReducer.bun)
+    const foodItems = useAppSelector((state: RootState) => state.constructorIngredientsReducer.foodItems)
+    const bun = useAppSelector((state: RootState) => state.constructorIngredientsReducer.bun)
 
     const [modalVisibility, setModalVisibility] = React.useState(false)
 
@@ -219,11 +221,22 @@ const CheckOutBox = () => {
         return ids
     }
 
-    const totalCost = useSelector((state: RootState) => state.constructorIngredientsReducer.totalCost)
+    const totalCost = useAppSelector((state: RootState) => state.constructorIngredientsReducer.totalCost)
 
     const placeOrder = async () => {
+        let cookie = getAuthCookie()
+        if (!cookie) {
+            refreshToken().then(_ => {
+                cookie = getAuthCookie()
+            })
+        }
+
         const response = await axios.post(burgerApiHost, {
             "ingredients": extractIds(),
+        }, {
+            headers: {
+                Authorization: cookie
+            }
         })
 
         if (!response.data.success || response.status !== 200) {
@@ -233,7 +246,7 @@ const CheckOutBox = () => {
         return response.data
     }
 
-    const isAuthorized = useSelector((state: RootState) => state.authReducer.IsAuthorized);
+    const isAuthorized = useAppSelector((state: RootState) => state.authReducer.IsAuthorized);
 
     return (
         <div className={`mt-10 ${styles.checkOutBox}`}>

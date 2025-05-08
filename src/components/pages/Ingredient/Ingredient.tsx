@@ -1,13 +1,13 @@
 import {useParams} from "react-router-dom";
-import {useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
 import styles from "./Ingredient.module.css";
 import React from "react";
+import {useAppSelector} from "../../../services/hocs";
 
 const Ingredient = () => {
     const { id } = useParams()
 
-    const ingredient = useSelector((state: RootState) => {
+    const ingredient = useAppSelector((state: RootState) => {
         return state.ingredientsReducer.ingredientsList.data.find(ingredient => ingredient._id === id)
     })
 
@@ -15,7 +15,7 @@ const Ingredient = () => {
         <section className={styles.ingredientSection}>
             {
                 ingredient ? (
-                    <div className={`${styles.ingredientContainer} mt-30`}>
+                    <div className={`${styles.ingredientContainer} mt-10`}>
                         <span className={`text text_type_main-large`}>Детали ингредиента</span>
                         <img src={ingredient.image_large} alt={ingredient.name} className={`mb-4`}/>
                         <span className={`text_type_main-medium`}>{ingredient.name}</span>

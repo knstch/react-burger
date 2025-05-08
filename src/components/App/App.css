@@ -72,3 +72,7 @@
 a {
   text-decoration: none;
 }
+
+.orderSuccessStatusColor {
+  color: #00CCCC;
+}

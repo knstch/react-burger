@@ -1,4 +1,4 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 interface AuthState {
     IsAuthorized: boolean;
@@ -21,7 +21,7 @@ export const authStateSlice = createSlice({
             state.IsAuthorized = false;
             state.RegisterState = "";
         },
-        setAuthState: (state, action) => {
+        setAuthState: (state, action: PayloadAction<string>) => {
             state.RegisterState = action.payload;
         }
     }

@@ -21,6 +21,11 @@ interface burgerConstructorData {
     totalCost: number,
 }
 
+interface MoveItemPayload {
+    dragIndex: number,
+    hoverIndex: number,
+}
+
 const initialState: burgerConstructorData = {
     foodItems: [],
     bun: null,
@@ -32,7 +37,7 @@ export const constructorIngredientsSlice = createSlice({
     initialState: initialState,
     reducers: {
         addIngredient: {
-            reducer: (state, action: PayloadAction<any>) => {
+            reducer: (state, action: PayloadAction<FoodItem>) => {
                     if (action.payload.item.type === 'bun') {
                         return {
                             ...state,
@@ -43,7 +48,7 @@ export const constructorIngredientsSlice = createSlice({
                     return {
                         ...state,
                         foodItems: [...state.foodItems, action.payload],
-                    }
+                        }
                     },
             prepare: (ingredient: any) => {
                 return {
@@ -68,7 +73,7 @@ export const constructorIngredientsSlice = createSlice({
                 totalCost: cost + bunCost,
             }
         },
-        removeIngredient: (state, action) => {
+        removeIngredient: (state, action: PayloadAction<number>) => {
             const foodItems = [...state.foodItems]
 
             if (action.payload >= 0 && action.payload < foodItems.length) {
@@ -85,7 +90,7 @@ export const constructorIngredientsSlice = createSlice({
                 totalCost: cost,
             }
         },
-        moveIngredient: (state, action) => {
+        moveIngredient: (state, action: PayloadAction<MoveItemPayload>) => {
             const { dragIndex, hoverIndex } = action.payload
 
             if (

@@ -1,12 +1,12 @@
 import React from "react";
 import styles from "./BurgerIngredients.module.css"
-import {useSelector} from "react-redux";
 import {RootState} from "../../../services/store";
+import {useAppSelector} from "../../../services/hocs";
 
 const IngredientDetails = () => {
-    const activeCardId = useSelector((state: RootState) => state.ingredientsReducer.activeOpenedCardId)
+    const activeCardId = useAppSelector((state: RootState) => state.ingredientsReducer.activeOpenedCardId)
 
-    const item = useSelector((state: RootState) => state.ingredientsReducer.ingredientsList.data.find(ingredient => ingredient._id === activeCardId))
+    const item = useAppSelector((state: RootState) => state.ingredientsReducer.ingredientsList.data.find(ingredient => ingredient._id === activeCardId))
 
     if (!item) {
         return null
